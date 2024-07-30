@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:danchu/color.dart';
 
 class CalendarStyles {
-  static const background = Color(0xFFFFD74A);
-  static const selectedColor = Color(0xFFFFB700);
-
   static CalendarStyle get calendarStyle => CalendarStyle(
         selectedDecoration: BoxDecoration(
-          color: selectedColor,
+          color: AppColors.deepYellow,
           shape: BoxShape.circle,
         ),
         todayDecoration: BoxDecoration(
-          color: selectedColor.withOpacity(0.5),
+          color: AppColors.deepYellow.withOpacity(0.5),
           shape: BoxShape.circle,
         ),
-        defaultTextStyle: TextStyle(color: Colors.black),
-        weekendTextStyle: TextStyle(color: Colors.red),
-        selectedTextStyle: TextStyle(color: Colors.white),
-        todayTextStyle: TextStyle(color: Colors.white),
+        defaultTextStyle: TextStyle(color: AppColors.nomalText),
+        weekendTextStyle: TextStyle(color: AppColors.sundayred),
+        selectedTextStyle: TextStyle(color: AppColors.nomalText),
+        todayTextStyle: TextStyle(color: AppColors.white),
       );
 
   static HeaderStyle get headerStyle => HeaderStyle(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'calendar_style.dart';
+import 'package:danchu/color.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -16,10 +17,10 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CalendarStyles.background,
+      backgroundColor: AppColors.danchuYellow,
       appBar: AppBar(
         title: Text('Calendar'),
-        backgroundColor: CalendarStyles.background,
+        backgroundColor: AppColors.danchuYellow,
       ),
       body: Container(
         margin: const EdgeInsets.all(6.0),
