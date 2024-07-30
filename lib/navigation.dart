@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'color_page1.dart';
 import 'color_page2.dart';
-import 'color_page3.dart';
-import 'color_page4.dart';
+import 'diary.dart';
+import 'setting.dart';
 
 class NavigationExample extends StatefulWidget {
   const NavigationExample({super.key});
@@ -17,8 +17,8 @@ class _NavigationExampleState extends State<NavigationExample> {
   final List<Widget> _pages = [
     const Page1(),
     const Page2(),
-    const Page3(),
-    const Page4(),
+    const DiaryPage(),
+    const SettingPage(),
   ];
 
   @override
@@ -51,7 +51,7 @@ class _NavigationExampleState extends State<NavigationExample> {
           NavigationDestination(
             selectedIcon: Icon(Icons.settings),
             icon: Icon(Icons.settings_outlined),
-            label: 'page4',
+            label: 'Settings',
           ),
         ],
       ),
