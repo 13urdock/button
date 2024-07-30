@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'color_page1.dart';
 import 'color_page2.dart';
 import 'color_page3.dart';
+import 'color_page4.dart';
 
 class NavigationExample extends StatefulWidget {
   const NavigationExample({super.key});
@@ -11,12 +12,13 @@ class NavigationExample extends StatefulWidget {
 }
 
 class _NavigationExampleState extends State<NavigationExample> {
-  int _selectedIndex = 1; // 초기 인덱스를 1(Notifications)로 설정
+  int _selectedIndex = 1;
 
   final List<Widget> _pages = [
     const Page1(),
     const Page2(),
     const Page3(),
+    const Page4(),
   ];
 
   @override
@@ -42,9 +44,14 @@ class _NavigationExampleState extends State<NavigationExample> {
             label: 'page2',
           ),
           NavigationDestination(
+            selectedIcon: Icon(Icons.folder),
+            icon: Icon(Icons.folder_outlined),
+            label: 'page3',
+          ),
+          NavigationDestination(
             selectedIcon: Icon(Icons.settings),
             icon: Icon(Icons.settings_outlined),
-            label: 'page3',
+            label: 'page4',
           ),
         ],
       ),
