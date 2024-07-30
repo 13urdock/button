@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'color_page1.dart';
-import 'color_page2.dart';
+import 'package:danchu/calendar/calendar_page.dart';
 import 'diary.dart';
 import 'setting.dart';
 
@@ -16,7 +16,7 @@ class _NavigationExampleState extends State<NavigationExample> {
 
   final List<Widget> _pages = [
     const Page1(),
-    const Page2(),
+    const CalendarPage(),
     const DiaryPage(),
     const SettingPage(),
   ];
