@@ -14,7 +14,7 @@ class CalendarStyles {
         ),
         defaultTextStyle: TextStyle(color: AppColors.nomalText),
         weekendTextStyle: TextStyle(color: AppColors.sundayred),
-        selectedTextStyle: TextStyle(color: AppColors.nomalText),
+        selectedTextStyle: TextStyle(color: AppColors.white),
         todayTextStyle: TextStyle(color: AppColors.white),
       );
 
@@ -22,5 +22,45 @@ class CalendarStyles {
         formatButtonVisible: false,
         titleCentered: true,
         titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      );
+  static CalendarBuilders get calendarBuilders => CalendarBuilders(
+        dowBuilder: (context, day) {
+          if (day.weekday == DateTime.sunday) {
+            return Center(
+              child: Text(
+                'Sun',
+                style: TextStyle(color: AppColors.sundayred),
+              ),
+            );
+          }
+          if (day.weekday == DateTime.saturday) {
+            return Center(
+              child: Text(
+                'Sat',
+                style: TextStyle(color: AppColors.saturdayblue),
+              ),
+            );
+          }
+          return null;
+        },
+        defaultBuilder: (context, day, focusedDay) {
+          if (day.weekday == DateTime.saturday) {
+            return Center(
+              child: Text(
+                '${day.day}',
+                style: TextStyle(color: AppColors.saturdayblue),
+              ),
+            );
+          }
+          if (day.weekday == DateTime.sunday) {
+            return Center(
+              child: Text(
+                '${day.day}',
+                style: TextStyle(color: AppColors.sundayred),
+              ),
+            );
+          }
+          return null;
+        },
       );
 }
