@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-void main() {
+void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  await Future.delayed(const Duration(seconds: 3));
+  FlutterNativeSplash.remove();
+
   runApp(const MainApp());
 }
 
@@ -12,7 +17,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Text('hi it\'s me again!'),
+          child: Text('Hello World!'),
         ),
       ),
     );
