@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'calendar_style.dart';
+import 'danchu_style.dart';
 import 'package:danchu/color.dart';
 import 'schedule_page.dart';
 
 //캘린더 페이지
-class CalendarPage extends StatefulWidget {
-  const CalendarPage({super.key});
+class danchuPage extends StatefulWidget {
+  const danchuPage({super.key});
 
   @override
-  _CalendarPageState createState() => _CalendarPageState();
+  _danchuPageState createState() => _danchuPageState();
 }
 
-class _CalendarPageState extends State<CalendarPage> {
+class _danchuPageState extends State<danchuPage> {
   DateTime _selectedDay = DateTime.now(); //초기날짜
   DateTime _focusedDay = DateTime.now(); //선택날짜
 
