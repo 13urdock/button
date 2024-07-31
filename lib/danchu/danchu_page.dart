@@ -11,9 +11,6 @@ class DanchuPage extends StatefulWidget {
 }
 
 class _DanchuPageState extends State<DanchuPage> {
-  DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
