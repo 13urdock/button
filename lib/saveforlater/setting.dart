@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
+import '../main.dart';
 
 void main() async {
   runApp(const SettingApp());
@@ -55,15 +55,18 @@ class _SettingPageState extends State<SettingPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      // profile.dart
                       _buildButton('프로필 설정', () {
                         Navigator.pop(context);
                       }),
+                      // theme.dart
                       _buildButton('테마 설정', () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const MyApp()),
                         );
                       }),
+                      // danchu_collection.dart
                       _buildButton('모은 단추 확인하기', () {
                         Navigator.push(
                           context,
