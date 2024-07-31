@@ -20,7 +20,7 @@ class _NavigationExampleState extends State<NavigationExample> {
     const CalendarPage(),
     const DanchuPage(),
     const DiaryPage(),
-    const SettingPage(),
+    const ContactPage(),
   ];
 
   @override
