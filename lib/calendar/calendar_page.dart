@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'calendar_style.dart';
 import 'package:danchu/src/color.dart';
 import 'schedule_page.dart';
+import 'package:flutter/src/painting/edge_insets.dart';
 
 //캘린더 페이지
 class CalendarPage extends StatefulWidget {
@@ -46,8 +47,8 @@ class _CalendarPageState extends State<CalendarPage> {
               calendarBuilders: CalendarStyles.calendarBuilders,
             ),
           ),
-          DraggableScrollableSheet( // 드래그 되는 페이지
-            initialChildSize: 0.1,
+          DraggableScrollableSheet(
+            initialChildSize: 0.45,
             minChildSize: 0.1,
             maxChildSize: 1.0,
             builder: (BuildContext context, ScrollController scrollController) {
@@ -59,18 +60,11 @@ class _CalendarPageState extends State<CalendarPage> {
                     topRight: Radius.circular(20),
                   ),
                 ),
-                child: ListView (
-                  children: [
-                    SchedulePage(
-                      selectedDay: _selectedDay,
-                      scrollController: scrollController,
-                    ),
-                    SchedulePage();           
-                  ]
-                  
-                );
-              )
-              
+                child: SchedulePage(
+                  selectedDay: _selectedDay,
+                  scrollController: scrollController,
+                ),
+              );
             },
           ),
         ],
