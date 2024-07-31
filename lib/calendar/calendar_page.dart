@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'calendar_style.dart';
-import 'package:danchu/color.dart';
+import 'package:danchu/src/color.dart';
 import 'schedule_page.dart';
 
 //캘린더 페이지
