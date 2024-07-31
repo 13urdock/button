@@ -12,9 +12,6 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,38 +22,14 @@ class _CalendarPageState extends State<CalendarPage> {
       ),
       body: Stack(
         children: [
-          Calendar(
-            //calendar 기능추가
-            selectedDay: _selectedDay,
-            focusedDay: _focusedDay,
-            onDaySelected: (
-              selectedDay,
-              focusedDay,
-            ) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
-          ),
+          Calendar(),
           DraggableScrollable(
             //darrable 기능 추가
             child: Stack(
               children: [
-                Expanded(
-                  child: ScheduleList(selectedDay: _selectedDay),
-                ),
                 IconButton(
                   icon: Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ScheduleList(selectedDay: _selectedDay),
-                      ),
-                    );
-                  },
+                  onPressed: ;
                 ),
               ],
             ),

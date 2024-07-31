@@ -24,20 +24,7 @@ class _DanchuPageState extends State<DanchuPage> {
       ),
       body: Stack(
         children: [
-          Calendar(
-            //calendar부분 (이건 나중에 child나 children추가해주세요)
-            selectedDay: _selectedDay,
-            focusedDay: _focusedDay,
-            onDaySelected: (
-              selectedDay,
-              focusedDay,
-            ) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
-          ),
+          Calendar(),
           DraggableScrollable(
             //draggable 부분
             child: Column(children: [
