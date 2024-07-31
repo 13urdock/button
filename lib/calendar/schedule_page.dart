@@ -44,19 +44,20 @@ class _SchedulePageState extends State<SchedulePage> {
         ),
         Padding( // 날짜, 일정 추가 부분
           padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text( // 날짜 표시
-                '${widget.selectedDay.year}년 ${widget.selectedDay.month}월 ${widget.selectedDay.day}일 일정',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              IconButton( // 할 일 추가 버튼
-                icon: Icon(Icons.add),
-                onPressed: addTodo, 
-              ),
-            ],
-          ),
+          child:
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text( // 날짜 표시
+                  '${widget.selectedDay.year}년 ${widget.selectedDay.month}월 ${widget.selectedDay.day}일 일정',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                IconButton( // 할 일 추가 버튼
+                  icon: Icon(Icons.add),
+                  onPressed: addTodo, 
+                ),
+              ],
+            ),
         ),
         ListView( // 할일 목록
           shrinkWrap: true,
