@@ -47,7 +47,7 @@ class _danchuPageState extends State<danchuPage> {
         ),
         Expanded(
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 10.0),
+            margin: const EdgeInsets.fromLTRB(6.0, 11.0, 6.0, 10.0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
