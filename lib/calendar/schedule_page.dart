@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../models/todo_item.dart';
 import '../src/color.dart';
+import 'add_schedule.dart';
 
 class SchedulePage extends StatefulWidget {
   final DateTime selectedDay;
@@ -16,14 +18,19 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
+  List<TodoItem> todos = []; // to do list array
 
-  List<String> todos = [];
-
-  // 새로운 할 일을 추가하는 메서드
-  void addTodo() {
-    setState(() {
-      todos.add('새로운 할 일 ${todos.length + 1}');
-    });
+  Future<void> addTodo() async {
+    final result = await Navigator.push<TodoItem>(
+      context,
+      MaterialPageRoute(builder: (context) => AddSchedulePage()),
+    );
+    
+    if (result != null) {
+      setState(() {
+        todos.add(result);
+      });
+    }
   }
 
   @override
@@ -31,7 +38,7 @@ class _SchedulePageState extends State<SchedulePage> {
     return ListView(
       controller: widget.scrollController,
       children: [
-        Center( // 상단 회색 바
+        Center( // draggable 상단 바
           child: Container(
             width: 40,
             height: 5,
@@ -42,47 +49,48 @@ class _SchedulePageState extends State<SchedulePage> {
             ),
           ),
         ),
-        Padding( // 날짜, 일정 추가 부분
+        Padding( // 날짜, 일기 추가
           padding: const EdgeInsets.all(16.0),
-          child:
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text( // 날짜 표시
-                  '${widget.selectedDay.year}년 ${widget.selectedDay.month}월 ${widget.selectedDay.day}일 일정',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                IconButton( // 할 일 추가 버튼
-                  icon: Icon(Icons.add),
-                  onPressed: addTodo, 
-                ),
-              ],
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text( // 날짜
+                '${widget.selectedDay.year}년 ${widget.selectedDay.month}월 ${widget.selectedDay.day}일 일정',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              IconButton( // todo list 추가 
+                icon: Icon(Icons.add),
+                onPressed: addTodo,
+              ),
+            ],
+          ),
         ),
-        ListView( // 할일 목록
+        ListView( // todo list
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           children: todos.asMap().entries.map((entry) {
             final index = entry.key;
             final todo = entry.value;
             return Dismissible(
-              key: Key(todo),
-              onDismissed: (direction) { // 슬라이드 하면 삭제하는 버튼
+              key: Key(todo.title),
+              direction: DismissDirection.endToStart,
+              onDismissed: (direction) {
                 setState(() {
                   todos.removeAt(index);
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$todo 삭제됨')),
+                  SnackBar(content: Text('${todo.title} 삭제됨')),
                 );
               },
               background: Container(color: AppColors.deepYellow),
-              child: ListTile(
-                title: Text(todo),
+              child: ListTile( // todo 배치
+                leading: Icon(todo.icon),
+                title: Text(todo.title),
+                subtitle: Text('${todo.description}\n${todo.dueDate?.toString() ?? "날짜 미정"}'),
               ),
             );
           }).toList(),
         ),
-        
       ],
     );
   }
