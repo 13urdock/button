@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
-
-void main() async {
-  runApp(const DiaryApp());
-}
 
 class DiaryApp extends StatefulWidget {
   const DiaryApp({super.key});
