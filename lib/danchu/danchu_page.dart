@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'danchu_style.dart';
-import 'package:danchu/color.dart';
-import 'schedule_page.dart';
+import 'package:danchu/src/color.dart';
+import 'danchu_banner.dart';
 
 //캘린더 페이지
 class danchuPage extends StatefulWidget {
@@ -19,7 +19,7 @@ class _danchuPageState extends State<danchuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.danchuYellow,
+      backgroundColor: AppColors.danchuYellow, //전체 화면 색상 설정(maincolor)
       appBar: AppBar(
         title: Text('Calendar'),
         backgroundColor: AppColors.danchuYellow,
