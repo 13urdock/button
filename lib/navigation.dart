@@ -2,8 +2,10 @@ import 'package:danchu/danchu/danchu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:danchu/src/color.dart';
 import 'package:danchu/calendar/calendar_page.dart';
-import 'package:danchu/diary.dart';
-import 'setting.dart';
+import 'diary.dart';
+import 'saveforlater/setting.dart';
+import 'saveforlater/profile.dart';
+import 'report.dart';
 
 class NavigationExample extends StatefulWidget {
   const NavigationExample({super.key});
@@ -19,7 +21,7 @@ class _NavigationExampleState extends State<NavigationExample> {
     const CalendarPage(),
     const danchuPage(),
     const DiaryPage(),
-    const SettingPage(),
+    const ContactPage(),
   ];
 
   @override

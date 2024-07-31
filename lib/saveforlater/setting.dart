@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'main.dart';
+import '../main.dart';
 
 void main() async {
   runApp(const SettingApp());
@@ -40,7 +39,7 @@ class _SettingPageState extends State<SettingPage> {
         builder: (context, constraints) {
           return Column(
             children: [
-              Expanded( // 프로필 사진
+              Expanded(
                 flex: 1,
                 child: Center(
                   child: CustomPaint(
@@ -49,22 +48,25 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ),
               ),
-              Expanded( // 메뉴
+              Expanded(
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      // profile.dart
                       _buildButton('프로필 설정', () {
                         Navigator.pop(context);
                       }),
+                      // theme.dart
                       _buildButton('테마 설정', () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const MyApp()),
                         );
                       }),
+                      // danchu_collection.dart
                       _buildButton('모은 단추 확인하기', () {
                         Navigator.push(
                           context,
@@ -87,42 +89,26 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ),
               ),
-              Expanded( // 메뉴 밑 빈 공간
-                flex: 1,
-                child: SizedBox(), // blank
-              ),
             ],
           );
         },
       ),
     );
   }
-}
 
-Widget _buildButton(String text, VoidCallback onPressed) {
-  return SizedBox(
-    width: double.infinity,
-    child: ElevatedButton(
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: TextStyle(
-          color: Colors.black, // 텍스트 색상을 검정색으로 설정 (노란 배경에 대비)
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
+  Widget _buildButton(String text, VoidCallback onPressed) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(text),
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(vertical: 15),
         ),
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.yellow, // 버튼 배경색을 노란색으로 설정
-        padding: EdgeInsets.symmetric(vertical: 15),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(3), // 3px radius 적용
-        ),
-      ),
-    ),
-  );
+    );
+  }
 }
-  
 
 class CirclePainter extends CustomPainter {
   @override
