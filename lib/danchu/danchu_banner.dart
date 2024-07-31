@@ -1,39 +1,29 @@
 import 'package:flutter/material.dart';
 
-class SchedulePage extends StatelessWidget {
+class DanchuBanner extends StatefulWidget {
   final DateTime selectedDay;
-  final ScrollController scrollController;
 
-  const SchedulePage({
+  const DanchuBanner({
     Key? key,
     required this.selectedDay,
-    required this.scrollController,
   }) : super(key: key);
 
   @override
+  _DanchuBannerState createState() => _DanchuBannerState();
+}
+
+class _DanchuBannerState extends State<DanchuBanner> {
+  @override
   Widget build(BuildContext context) {
-    return ListView(
-      controller: scrollController,
-      children: [
-        Center(
-          child: Container(
-            width: 40,
-            height: 5,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(2.5),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            '${selectedDay.year}년 ${selectedDay.month}월 ${selectedDay.day}일 일정',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
+    return RichText(
+      text: TextSpan(
+        text: 'Hello ',
+        style: DefaultTextStyle.of(context).style,
+        children: const <TextSpan>[
+          TextSpan(text: 'bold', style: TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(text: ' world!'),
+        ],
+      ),
     );
   }
 }

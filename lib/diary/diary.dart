@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
-
-void main() async {
-  runApp(const DiaryApp());
-}
 
 class DiaryApp extends StatefulWidget {
   const DiaryApp({super.key});
@@ -43,13 +38,14 @@ class _DiaryPageState extends State<DiaryPage> {
                 flex: 1,
                 child: Center(
                   child: CustomPaint(
-                    size: Size(constraints.maxWidth / 3, constraints.maxWidth / 3),
+                    size: Size(
+                        constraints.maxWidth / 3, constraints.maxWidth / 3),
                     painter: CirclePainter(),
                   ),
                 ),
               ),
               Expanded(
-               flex: 2,
+                flex: 2,
                 child: SizedBox(), // content of diary
               ),
             ],
@@ -77,7 +73,7 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue  // 원하는 색상으로 변경 가능
+      ..color = Colors.blue // 원하는 색상으로 변경 가능
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(
