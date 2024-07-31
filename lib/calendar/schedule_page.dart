@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class SchedulePage extends StatelessWidget {
+class SchedulePage extends StatefulWidget {
   final DateTime selectedDay;
   final ScrollController scrollController;
 
@@ -13,7 +13,7 @@ class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      controller: scrollController,
+      controller: widget.scrollController,
       children: [
         Center(
           child: Container(
