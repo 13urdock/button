@@ -1,3 +1,4 @@
+import 'package:danchu/src/color.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -124,10 +125,10 @@ class _ContactPageState extends State<ContactPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CalendarStyles.background,  // 여기에 배경색을 지정합니다.
+      backgroundColor: AppColors.danchuYellow,  // 여기에 배경색을 지정합니다.
       appBar: AppBar(
         title: Text('문의화면'),
-        backgroundColor: CalendarStyles.background,
+        backgroundColor: AppColors.danchuYellow,
       ),
       body: SingleChildScrollView(
         child: Padding(
