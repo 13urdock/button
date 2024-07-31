@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'color_page1.dart';
+import 'package:danchu/test_home.dart';
 import 'package:danchu/calendar/calendar_page.dart';
-import 'diary.dart';
+import 'package:danchu/diary.dart';
 import 'setting.dart';
 
 class NavigationExample extends StatefulWidget {
@@ -15,7 +15,7 @@ class _NavigationExampleState extends State<NavigationExample> {
   int _selectedIndex = 1;
 
   final List<Widget> _pages = [
-    const Page1(),
+    const TestDiaryPage(),
     const CalendarPage(),
     const DiaryPage(),
     const SettingPage(),
