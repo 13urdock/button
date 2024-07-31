@@ -23,7 +23,6 @@ class CalendarStyles {
         titleCentered: true,
         titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       );
-
   static CalendarBuilders get calendarBuilders => CalendarBuilders(
         dowBuilder: (context, day) {
           if (day.weekday == DateTime.sunday) {
