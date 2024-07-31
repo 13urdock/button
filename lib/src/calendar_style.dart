@@ -2,7 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:danchu/src/color.dart';
 
+class Calendar extends StatefulWidget {
+  final DateTime selectedDay;
+  final DateTime focusedDay;
+  final Function(DateTime, DateTime) onDaySelected;
+
+  const Calendar({
+    Key? key,
+    required this.selectedDay,
+    required this.focusedDay,
+    required this.onDaySelected,
+  }) : super(key: key);
+
+  @override
+  _CalendarState createState() => _CalendarState();
+}
+
 class CalendarStyles {
+  late DateTime _focuseDay;
+
   static CalendarStyle get calendarStyle => CalendarStyle(
         selectedDecoration: BoxDecoration(
           color: AppColors.deepYellow,
@@ -23,6 +41,7 @@ class CalendarStyles {
         titleCentered: true,
         titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       );
+
   static CalendarBuilders get calendarBuilders => CalendarBuilders(
         dowBuilder: (context, day) {
           if (day.weekday == DateTime.sunday) {
@@ -63,4 +82,42 @@ class CalendarStyles {
           return null;
         },
       );
+}
+
+class _CalendarState extends State<Calendar> {
+  late DateTime _focusedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusedDay = widget.focusedDay;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.danchuYellow,
+      body: Stack(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(6.0),
+            child: TableCalendar(
+              firstDay: DateTime.utc(2010, 10, 16),
+              lastDay: DateTime.utc(2030, 3, 14),
+              focusedDay: _focusedDay,
+              selectedDayPredicate: (day) => isSameDay(widget.selectedDay, day),
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _focusedDay = focusedDay;
+                });
+              },
+              calendarStyle: CalendarStyles.calendarStyle,
+              headerStyle: CalendarStyles.headerStyle,
+              calendarBuilders: CalendarStyles.calendarBuilders,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

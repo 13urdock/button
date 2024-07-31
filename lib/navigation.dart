@@ -1,31 +1,29 @@
-import 'package:danchu/danchu/danchu_page.dart';
+import 'src/color.dart';
 import 'package:flutter/material.dart';
-import 'package:danchu/src/color.dart';
-import 'package:danchu/calendar/calendar_page.dart';
-import 'package:danchu/danchu/danchu_page.dart';
-import 'diary/diary.dart';
-import 'setting.dart';
+import 'calendar/calendar_page.dart';
+import 'danchu/danchu_page.dart';
+import 'setting/setting.dart';
 
-class NavigationExample extends StatefulWidget {
-  const NavigationExample({super.key});
+class Navigation extends StatefulWidget {
+  const Navigation({super.key});
 
   @override
-  State<NavigationExample> createState() => _NavigationExampleState();
+  State<Navigation> createState() => _NavigationState();
 }
 
-class _NavigationExampleState extends State<NavigationExample> {
+class _NavigationState extends State<Navigation> {
   int _selectedIndex = 1;
 
   final List<Widget> _pages = [
     const CalendarPage(),
     const DanchuPage(),
-    const DiaryPage(),
-    const ContactPage(),
+    const SettingApp(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _pages[_selectedIndex], // 선택된 인덱스에 해당하는 페이지 표시
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -38,17 +36,12 @@ class _NavigationExampleState extends State<NavigationExample> {
           NavigationDestination(
             selectedIcon: Icon(Icons.folder),
             icon: Icon(Icons.folder),
-            label: 'page1',
+            label: 'calendar',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.home),
             icon: Icon(Icons.home_outlined),
-            label: 'page2',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.folder),
-            icon: Icon(Icons.folder_outlined),
-            label: 'page3',
+            label: 'danchu',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.settings),
