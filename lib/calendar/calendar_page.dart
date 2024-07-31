@@ -46,7 +46,7 @@ class _CalendarPageState extends State<CalendarPage> {
               calendarBuilders: CalendarStyles.calendarBuilders,
             ),
           ),
-          DraggableScrollableSheet(
+          DraggableScrollableSheet( // 드래그 되는 페이지
             initialChildSize: 0.1,
             minChildSize: 0.1,
             maxChildSize: 1.0,
@@ -59,11 +59,18 @@ class _CalendarPageState extends State<CalendarPage> {
                     topRight: Radius.circular(20),
                   ),
                 ),
-                child: SchedulePage(
-                  selectedDay: _selectedDay,
-                  scrollController: scrollController,
-                ),
-              );
+                child: ListView (
+                  children: [
+                    SchedulePage(
+                      selectedDay: _selectedDay,
+                      scrollController: scrollController,
+                    ),
+                    SchedulePage();           
+                  ]
+                  
+                );
+              )
+              
             },
           ),
         ],
