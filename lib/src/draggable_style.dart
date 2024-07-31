@@ -8,11 +8,12 @@ class DraggableScrollable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.35,
-      minChildSize: 0.35,
-      maxChildSize: 1.0,
+      initialChildSize: 0.35, //draggable 첫 위치
+      minChildSize: 0.35, //최소 위치
+      maxChildSize: 1.0, //최대 위치
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
+          //draggable되는 박스
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -36,7 +37,7 @@ class DraggableScrollable extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: child,
+                child: child, //추가 기능(기능 추가하면 children으로 변경해주세요)
               ),
             ],
           ),

@@ -8,6 +8,7 @@ class Calendar extends StatefulWidget {
   final Function(DateTime, DateTime) onDaySelected;
 
   const Calendar({
+    //calendar 엎으면서 시간이 꼬여서 이렇게 해뒀는데 해결되면 코드변경 부탁드립니다....
     Key? key,
     required this.selectedDay,
     required this.focusedDay,
@@ -22,6 +23,7 @@ class CalendarStyles {
   late DateTime _focuseDay;
 
   static CalendarStyle get calendarStyle => CalendarStyle(
+        //calendar style
         selectedDecoration: BoxDecoration(
           color: AppColors.deepYellow,
           shape: BoxShape.circle,
@@ -37,12 +39,12 @@ class CalendarStyles {
       );
 
   static HeaderStyle get headerStyle => HeaderStyle(
-        formatButtonVisible: false,
         titleCentered: true,
         titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       );
 
   static CalendarBuilders get calendarBuilders => CalendarBuilders(
+        //주말 색변경
         dowBuilder: (context, day) {
           if (day.weekday == DateTime.sunday) {
             return Center(
@@ -85,6 +87,7 @@ class CalendarStyles {
 }
 
 class _CalendarState extends State<Calendar> {
+  //
   late DateTime _focusedDay;
 
   @override
@@ -95,6 +98,7 @@ class _CalendarState extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
+    //calendar
     return Scaffold(
       backgroundColor: AppColors.danchuYellow,
       body: Stack(
