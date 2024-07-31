@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:danchu/src/color.dart';
+import 'schedule_page.dart';
+import 'package:flutter/src/painting/edge_insets.dart';
 import '/src/color.dart';
 import '/src/draggable_style.dart';
 import 'schedule_list.dart';
 import '/src/calendar_style.dart';
+import 'add_schedule.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -29,7 +34,12 @@ class _CalendarPageState extends State<CalendarPage> {
               children: [
                 IconButton(
                   icon: Icon(Icons.add),
-                  onPressed: ;
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddSchedulePage()),
+                    );
+                  },
                 ),
               ],
             ),
