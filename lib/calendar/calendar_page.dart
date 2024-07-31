@@ -26,6 +26,7 @@ class _CalendarPageState extends State<CalendarPage> {
       body: Stack(
         children: [
           Calendar(
+            //calendar 기능추가
             selectedDay: _selectedDay,
             focusedDay: _focusedDay,
             onDaySelected: (
@@ -39,6 +40,7 @@ class _CalendarPageState extends State<CalendarPage> {
             },
           ),
           DraggableScrollable(
+            //darrable 기능 추가
             child: Stack(
               children: [
                 Expanded(
