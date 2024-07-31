@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import '../src/color.dart';
 
-class ScheduleList extends StatefulWidget {
-  final DateTime selectedDay;
+class TodoList extends StatefulWidget {
+  const TodoList(Key? key) : super(key: key);
 
-  const ScheduleList({Key? key, required this.selectedDay}) : super(key: key);
   @override
-  _ScheduleListState createState() => _ScheduleListState();
+  _TodoListState createState() => _TodoListState();
 }
 
-class _ScheduleListState extends State<ScheduleList> {
+class _TodoListState extends State<TodoList> {
   List<String> todos = [];
 
   void addTodo() {
