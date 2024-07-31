@@ -4,6 +4,7 @@ import 'calendar_style.dart';
 import 'package:danchu/src/color.dart';
 import 'schedule_page.dart';
 
+
 //캘린더 페이지
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -13,8 +14,10 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+
   DateTime _selectedDay = DateTime.now(); //초기날짜
   DateTime _focusedDay = DateTime.now(); //선택날짜
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +27,7 @@ class _CalendarPageState extends State<CalendarPage> {
         title: Text('Calendar'),
         backgroundColor: AppColors.danchuYellow,
       ),
+
       body: Stack(
         children: [
           Container(
@@ -43,6 +47,7 @@ class _CalendarPageState extends State<CalendarPage> {
               },
               calendarStyle: CalendarStyles.calendarStyle,
               headerStyle: CalendarStyles.headerStyle,
+
               calendarBuilders: CalendarStyles.calendarBuilders,
             ),
           ),
@@ -63,6 +68,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   selectedDay: _selectedDay,
                   scrollController: scrollController,
                 ),
+
               );
             },
           ),
