@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:danchu/color.dart';
+import 'package:danchu/src/color.dart';
 
 class CalendarStyles {
   static CalendarStyle get calendarStyle => CalendarStyle(

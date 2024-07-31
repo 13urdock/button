@@ -1,5 +1,6 @@
 import 'package:danchu/danchu/danchu_page.dart';
 import 'package:flutter/material.dart';
+import 'package:danchu/src/color.dart';
 import 'package:danchu/calendar/calendar_page.dart';
 import 'package:danchu/diary.dart';
 import 'setting.dart';
