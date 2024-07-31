@@ -2,7 +2,7 @@ import 'package:danchu/danchu/danchu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:danchu/src/color.dart';
 import 'package:danchu/calendar/calendar_page.dart';
-import 'diary.dart';
+import 'diary/diary.dart';
 import 'setting.dart';
 
 class NavigationExample extends StatefulWidget {

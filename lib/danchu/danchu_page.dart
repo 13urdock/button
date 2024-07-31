@@ -24,50 +24,40 @@ class _danchuPageState extends State<danchuPage> {
         title: Text('Calendar'),
         backgroundColor: AppColors.danchuYellow,
       ),
-      body: Stack(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(6.0),
-            child: TableCalendar(
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2030, 3, 14),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              },
-              calendarStyle: CalendarStyles.calendarStyle,
-              headerStyle: CalendarStyles.headerStyle,
-              calendarBuilders: CalendarStyles.calendarBuilders,
+      body: Column(children: [
+        Container(
+          margin: const EdgeInsets.all(6.0),
+          child: TableCalendar(
+            firstDay: DateTime.utc(2010, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) {
+              return isSameDay(_selectedDay, day);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            },
+            calendarStyle: CalendarStyles.calendarStyle,
+            headerStyle: CalendarStyles.headerStyle,
+            calendarBuilders: CalendarStyles.calendarBuilders,
+          ),
+        ),
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Center(
+              child: Text('여기에 원하는 내용을 넣으세요'),
             ),
           ),
-          DraggableScrollableSheet(
-            initialChildSize: 0.1,
-            minChildSize: 0.1,
-            maxChildSize: 1.0,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: SchedulePage(
-                  selectedDay: _selectedDay,
-                  scrollController: scrollController,
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+        ),
+      ]),
     );
   }
 }
