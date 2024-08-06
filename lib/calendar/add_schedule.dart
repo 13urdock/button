@@ -35,6 +35,7 @@ class _AddSchedulePageState extends State<AddSchedulePage> {
               decoration: InputDecoration(labelText: '설명'),
             ),
             SizedBox(height: 20), // 아이콘 간 간격
+
             ElevatedButton( // 날짜 선택 창(시간 선택으로 바꿔야함)
               child: Text(_selectedDate == null 
                 ? '날짜 선택' 

@@ -1,38 +1,32 @@
 import 'package:flutter/material.dart';
 
-class DiaryApp extends StatefulWidget {
-  const DiaryApp({super.key});
+class DiaryEntry {
+  final String content;
+  final DateTime date;
 
-  @override
-  _DiaryAppState createState() => _DiaryAppState();
-}
-
-class _DiaryAppState extends State<DiaryApp> {
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: DiaryPage(),
-    );
-  }
+  DiaryEntry({required this.content, required this.date});
 }
 
 class DiaryPage extends StatefulWidget {
-  const DiaryPage({super.key});
+  final TextEditingController _textController = TextEditingController();
 
   @override
   _DiaryPageState createState() => _DiaryPageState();
 }
 
 class _DiaryPageState extends State<DiaryPage> {
+  TextEditingController _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('일기 작성'),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 flex: 1,
@@ -45,8 +39,19 @@ class _DiaryPageState extends State<DiaryPage> {
                 ),
               ),
               Expanded(
-                flex: 2,
-                child: SizedBox(), // content of diary
+                child: TextField(
+                  controller: _textController,
+                  decoration: InputDecoration(
+                    hintText: '여기에 일기를 작성하세요...',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context, _textController.text);
+                },
+                child: Text('Add Danchu'), // 버튼에 표시될 텍스트
               ),
             ],
           );
@@ -73,7 +78,7 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue // 원하는 색상으로 변경 가능
+      ..color = Colors.blue
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(
