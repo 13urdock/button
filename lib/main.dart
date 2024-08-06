@@ -17,9 +17,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Navigation',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: const Navigation(),
     );
   }
