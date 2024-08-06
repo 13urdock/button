@@ -17,7 +17,7 @@ class _NavigationState extends State<Navigation> {
   int _selectedIndex = 1;
 
   final List<Widget> _pages = [
-    const Calendar(),
+    const CalendarPage(),
     const DanchuPage(),
     const SettingApp(),
   ];
