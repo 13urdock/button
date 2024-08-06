@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:danchu/src/color.dart';
 
-class Calendar extends StatefulWidget {
-  const Calendar({Key? key}) : super(key: key);
+class DanchuCalendar extends StatefulWidget {
+  const DanchuCalendar({Key? key}) : super(key: key);
 
   @override
-  _CalendarState createState() => _CalendarState();
+  _DanchuCalendarState createState() => _DanchuCalendarState();
 }
 
-class _CalendarState extends State<Calendar> {
+class _DanchuCalendarState extends State<DanchuCalendar> {
   late DateTime _focusedDay;
   late DateTime _selectedDay;
 
@@ -23,31 +23,24 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     //calendar
-    return Scaffold(
-      backgroundColor: AppColors.danchuYellow,
-      body: Stack(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(6.0),
-            child: TableCalendar(
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2030, 3, 14),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              },
-              calendarStyle: CalendarStyles.calendarStyle,
-              headerStyle: CalendarStyles.headerStyle,
-              calendarBuilders: CalendarStyles.calendarBuilders,
-            ),
-          ),
-        ],
+    return Container(
+      margin: const EdgeInsets.all(6.0),
+      child: TableCalendar(
+        firstDay: DateTime.utc(2010, 10, 16),
+        lastDay: DateTime.utc(2030, 3, 14),
+        focusedDay: _focusedDay,
+        selectedDayPredicate: (day) {
+          return isSameDay(_selectedDay, day);
+        },
+        onDaySelected: (selectedDay, focusedDay) {
+          setState(() {
+            _selectedDay = selectedDay;
+            _focusedDay = focusedDay;
+          });
+        },
+        calendarStyle: CalendarStyles.calendarStyle,
+        headerStyle: CalendarStyles.headerStyle,
+        calendarBuilders: CalendarStyles.calendarBuilders,
       ),
     );
   }
