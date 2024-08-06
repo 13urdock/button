@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import '../src/color.dart';
 
 class TodoList extends StatefulWidget {
-  const TodoList(Key? key) : super(key: key);
+  const TodoList() : super();
 
   @override
-  _TodoListState createState() => _TodoListState();
+  TodoListState createState() => TodoListState();
 }
 
-class _TodoListState extends State<TodoList> {
+class TodoListState extends State<TodoList> {
   List<String> todos = [];
 
   void addTodo() {
