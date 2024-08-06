@@ -16,14 +16,16 @@ class _DanchuPageState extends State<DanchuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.danchuYellow,
+      appBar: AppBar(
+        title: Text('Danchu Calendar'),
         backgroundColor: AppColors.danchuYellow,
-        appBar: AppBar(
-          title: Text('Danchu Calendar'),
-          backgroundColor: AppColors.danchuYellow,
-        ),
-        body: Stack(children: [
+      ),
+      body: Stack(children: [
           DanchuCalendar(),
-          DanchuDraggable(),
+          SizedBox.expand(
+            child: DanchuDraggable(),
+          ),
         ]));
   }
 }

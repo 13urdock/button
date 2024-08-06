@@ -13,6 +13,8 @@ class _CalendarState extends State<Calendar> {
   late DateTime _focusedDay;
   late DateTime _selectedDay;
 
+  DateTime get selectedDay => _selectedDay;
+
   @override
   void initState() {
     super.initState();
