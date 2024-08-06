@@ -23,7 +23,9 @@ class _DanchuPageState extends State<DanchuPage> {
       ),
       body: Stack(children: [
           DanchuCalendar(),
-          DanchuDraggable(),
+          SizedBox.expand(
+            child: DanchuDraggable(),
+          ),
         ]));
   }
 }
