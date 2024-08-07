@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import '../models/todo_item.dart';
-import '../src/custom_todo_icon.dart';
 import 'package:danchu/icon_selector_popup.dart';
 import 'package:danchu/colorpallet.dart';
 
+import '../models/todo_item.dart';
+import '../src/custom_todo_icon.dart';
+
+//TodoItem : 일정 정보 저장하는 클래스, 정보를 받아서 calendar_draggable로 TodoItem을 리턴합니다
+//정보 받는 코드들 뿐이라 리턴하는 코드는 line 112부터
 class AddSchedulePage extends StatefulWidget {
   @override
   _AddSchedulePageState createState() => _AddSchedulePageState();
 }
 
 class _AddSchedulePageState extends State<AddSchedulePage> {
+  // TodoItem(models/todo_item.dart)에 추가될 데이터들 제목, 설명, 날짜, 아이콘 색상
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime? _selectedDate;
-  IconData _selectedIcon = Icons.assignment;
+  IconData _selectedIcon = Icons.assignment; 
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +38,13 @@ class _AddSchedulePageState extends State<AddSchedulePage> {
               controller: _descriptionController,
               decoration: InputDecoration(labelText: '설명'),
             ),
-            SizedBox(height: 20), // 아이콘 간 간격
-            ElevatedButton( // 날짜 선택 창
+            SizedBox(height: 20), // 아이콘 간 간격. 의미 없음
+
+            ElevatedButton( // 날짜 선택 팝업
               child: Text(_selectedDate == null 
                 ? '날짜 선택' 
                 : '${_selectedDate!.year}/${_selectedDate!.month}/${_selectedDate!.day}'),
-              onPressed: () async { // 날짜 선택 팝업 띄움
+              onPressed: () async {
                 final pickedDate = await showDatePicker(
                   context: context,
                   initialDate: DateTime.now(),
@@ -54,7 +59,7 @@ class _AddSchedulePageState extends State<AddSchedulePage> {
               },
             ),
             SizedBox(height: 20),
-            GestureDetector(
+            GestureDetector( // 아이콘 색상 정하는 창
               onTap: () {
                 showDialog(
                   context: context,
@@ -81,7 +86,7 @@ class _AddSchedulePageState extends State<AddSchedulePage> {
                         title: Text('COLOR'),
                         content: IconSelector(
                           onColorSelected: (Color color) {
-                            Navigator.of(context).pop(color);  // 선택된 색상을 pop으로 반환
+                            Navigator.of(context).pop();
                           },
                         ),
                       );
@@ -90,9 +95,8 @@ class _AddSchedulePageState extends State<AddSchedulePage> {
 
                   if (selectedColor != null) {
                     print('Selected color: $selectedColor');
-                    // 여기에서 선택된 색상으로 상태를 업데이트합니다.
                     setState(() {
-                      // 예: _iconColor = selectedColor;
+                      
                     });
                   }
                 },
@@ -105,10 +109,10 @@ class _AddSchedulePageState extends State<AddSchedulePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.check), // 스케줄 추가 완료 버튼, 입력된 데이터들은 schedule page에 표시됨
+        child: Icon(Icons.check), // 스케줄 추가 완료 버튼, 입력된 데이터들은 calendar_draggble에 표시됨
         onPressed: () {
           if (_titleController.text.isNotEmpty) {
-            Navigator.of(context).pop(TodoItem(
+            Navigator.of(context).pop(TodoItem( // TodoItem 정보 저장 후 리턴하면 calendar_draggable에 있는 schedule에 저장됨
               title: _titleController.text,
               description: _descriptionController.text,
               dueDate: _selectedDate,
