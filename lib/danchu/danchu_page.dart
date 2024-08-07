@@ -13,19 +13,30 @@ class DanchuPage extends StatefulWidget {
 }
 
 class _DanchuPageState extends State<DanchuPage> {
+  DateTime _selectedDay = DateTime.now();
+
+  void _onDaySelected(DateTime selectedDay) {
+    setState(() {
+      _selectedDay = selectedDay;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.danchuYellow,
+      appBar: AppBar(
+        title: Text('Danchu Calendar'),
         backgroundColor: AppColors.danchuYellow,
-        appBar: AppBar(
-          title: Text('Danchu Calendar'),
-          backgroundColor: AppColors.danchuYellow,
-        ),
-        body: Stack(children: [
-          DanchuCalendar(),
+      ),
+      body: Stack(
+        children: [
+          DanchuCalendar(onDaySelected: _onDaySelected),
           SizedBox.expand(
-            child: DanchuDraggable(),
+            child: DanchuDraggable(selectedDay: _selectedDay),
           ),
-        ]));
+        ],
+      ),
+    );
   }
 }
