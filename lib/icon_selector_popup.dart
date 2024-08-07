@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'src/custom_todo_icon.dart';
 
 class IconSelector extends StatefulWidget {
@@ -26,7 +27,7 @@ class _IconSelectorState extends State<IconSelector> {
   Widget build(BuildContext context) {
     return Container(
       width: double.maxFinite,
-      child: GridView.builder(
+      child: GridView.builder(// itembuilder 전까지 gridview 사이즈 설정
         shrinkWrap: true,
         itemCount: _colors.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -57,7 +58,7 @@ class _IconSelectorState extends State<IconSelector> {
                   _selectedColor = _colors[index];
                 });
                 widget.onColorSelected(_selectedColor);
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(_selectedColor);
               },
               color: _colors[index],
             ),
