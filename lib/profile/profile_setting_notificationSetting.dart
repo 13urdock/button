@@ -7,10 +7,12 @@ class ProfileSettingNotification extends StatefulWidget {
   const ProfileSettingNotification({super.key});
 
   @override
-  _ProfileSettingNotificationState createState() => _ProfileSettingNotificationState();
+  _ProfileSettingNotificationState createState() =>
+      _ProfileSettingNotificationState();
 }
 
-class _ProfileSettingNotificationState extends State<ProfileSettingNotification> {
+class _ProfileSettingNotificationState
+    extends State<ProfileSettingNotification> {
   bool isScheduleNotificationOn = true;
   bool isSoundOn = true;
   bool isVibrationOn = true;
@@ -50,7 +52,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
                     SizedBox(height: 50),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: _buildSettingItem('일정 알림', isScheduleNotificationOn, (value) {
+                      child: _buildSettingItem(
+                          '일정 알림', isScheduleNotificationOn, (value) {
                         setState(() => isScheduleNotificationOn = value);
                       }, icon: Icons.event_note),
                     ),
@@ -71,7 +74,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
                     _buildDivider(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: _buildSettingItem('친구 추가 푸시 알림', isFriendAddNotificationOn, (value) {
+                      child: _buildSettingItem(
+                          '친구 추가 푸시 알림', isFriendAddNotificationOn, (value) {
                         setState(() => isFriendAddNotificationOn = value);
                       }, icon: Icons.person_add),
                     ),
@@ -80,7 +84,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: Column(
                         children: [
-                          _buildSettingItem('방해 금지 모드', isDoNotDisturbOn, (value) {
+                          _buildSettingItem('방해 금지 모드', isDoNotDisturbOn,
+                              (value) {
                             setState(() => isDoNotDisturbOn = value);
                           }, icon: Icons.do_not_disturb_on),
                           _buildDoNotDisturbTimeSettings(),
@@ -105,7 +110,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
     );
   }
 
-  Widget _buildSettingItem(String title, bool value, Function(bool) onChanged, {IconData? icon, bool hasLeadingSpace = false}) {
+  Widget _buildSettingItem(String title, bool value, Function(bool) onChanged,
+      {IconData? icon, bool hasLeadingSpace = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -154,7 +160,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
     );
   }
 
-  Widget _buildTimePickerItem(String title, DateTime time, Function(DateTime) onChanged) {
+  Widget _buildTimePickerItem(
+      String title, DateTime time, Function(DateTime) onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -177,116 +184,132 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
                 context: context,
                 builder: (BuildContext context) {
                   DateTime tempTime = time;
-                  return StatefulBuilder(
-                    builder: (context, setState) {
-                      return AlertDialog(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        content: Container(
-                          height: 200,
-                          width: 300,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: ScrollDateTimePicker(
-                                  itemExtent: 50,
-                                  infiniteScroll: true,
-                                  onChange: (DateTime newDateTime) {
-                                    setState(() {
-                                      tempTime = DateTime(
-                                        tempTime.year,
-                                        tempTime.month,
-                                        tempTime.day,
-                                        newDateTime.hour % 12 == 0 ? 12 : newDateTime.hour % 12,
-                                        newDateTime.minute,
-                                      );
-                                    });
-                                  },
-                                  dateOption: DateTimePickerOption(
-                                    dateFormat: DateFormat('h:mm'),
-                                    minDate: DateTime(2024, 1, 1, 1, 0),
-                                    maxDate: DateTime(2024, 1, 1, 12, 59),
-                                    initialDate: tempTime,
-                                  ),
-                                  style: DateTimePickerStyle(
-                                    activeStyle: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFFFFD66E),
-                                    ),
-                                    inactiveStyle: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                  wheelOption: const DateTimePickerWheelOption(
-                                    perspective: 0.01,
-                                    diameterRatio: 1.2,
-                                    squeeze: 1.0,
-                                  ),
-                                  itemBuilder: (context, pattern, text, isActive, isDisabled) {
-                                    return Center(
-                                      child: Text(
-                                        text,
-                                        style: TextStyle(
-                                          fontSize: isActive ? 20 : 16,
-                                          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                                          color: isActive ? Color(0xFFFFD66E) : Colors.black54,
-                                        ),
-                                      ),
+                  return StatefulBuilder(builder: (context, setState) {
+                    return AlertDialog(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
+                      content: Container(
+                        height: 200,
+                        width: 300,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: ScrollDateTimePicker(
+                                itemExtent: 50,
+                                infiniteScroll: true,
+                                onChange: (DateTime newDateTime) {
+                                  setState(() {
+                                    tempTime = DateTime(
+                                      tempTime.year,
+                                      tempTime.month,
+                                      tempTime.day,
+                                      newDateTime.hour % 12 == 0
+                                          ? 12
+                                          : newDateTime.hour % 12,
+                                      newDateTime.minute,
                                     );
-                                  },
+                                  });
+                                },
+                                dateOption: DateTimePickerOption(
+                                  dateFormat: DateFormat('h:mm'),
+                                  minDate: DateTime(2024, 1, 1, 1, 0),
+                                  maxDate: DateTime(2024, 1, 1, 12, 59),
+                                  initialDate: tempTime,
                                 ),
-                              ),
-                              Expanded(
-                                child: ListWheelScrollView(
-                                  itemExtent: 50,
-                                  physics: FixedExtentScrollPhysics(),
-                                  children: ['AM', 'PM'].map((e) => Center(
+                                style: DateTimePickerStyle(
+                                  activeStyle: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFFFD66E),
+                                  ),
+                                  inactiveStyle: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                wheelOption: const DateTimePickerWheelOption(
+                                  perspective: 0.01,
+                                  diameterRatio: 1.2,
+                                  squeeze: 1.0,
+                                ),
+                                itemBuilder: (context, pattern, text, isActive,
+                                    isDisabled) {
+                                  return Center(
                                     child: Text(
-                                      e,
+                                      text,
                                       style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: (e == 'AM' && tempTime.hour < 12) || (e == 'PM' && tempTime.hour >= 12)
+                                        fontSize: isActive ? 20 : 16,
+                                        fontWeight: isActive
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                        color: isActive
                                             ? Color(0xFFFFD66E)
                                             : Colors.black54,
                                       ),
                                     ),
-                                  )).toList(),
-                                  onSelectedItemChanged: (index) {
-                                    setState(() {
-                                      if (index == 0 && tempTime.hour >= 12) {
-                                        tempTime = tempTime.subtract(Duration(hours: 12));
-                                      } else if (index == 1 && tempTime.hour < 12) {
-                                        tempTime = tempTime.add(Duration(hours: 12));
-                                      }
-                                    });
-                                  },
-                                ),
+                                  );
+                                },
                               ),
-                            ],
-                          ),
+                            ),
+                            Expanded(
+                              child: ListWheelScrollView(
+                                itemExtent: 50,
+                                physics: FixedExtentScrollPhysics(),
+                                children: ['AM', 'PM']
+                                    .map((e) => Center(
+                                          child: Text(
+                                            e,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: (e == 'AM' &&
+                                                          tempTime.hour < 12) ||
+                                                      (e == 'PM' &&
+                                                          tempTime.hour >= 12)
+                                                  ? Color(0xFFFFD66E)
+                                                  : Colors.black54,
+                                            ),
+                                          ),
+                                        ))
+                                    .toList(),
+                                onSelectedItemChanged: (index) {
+                                  setState(() {
+                                    if (index == 0 && tempTime.hour >= 12) {
+                                      tempTime = tempTime
+                                          .subtract(Duration(hours: 12));
+                                    } else if (index == 1 &&
+                                        tempTime.hour < 12) {
+                                      tempTime =
+                                          tempTime.add(Duration(hours: 12));
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                        actions: [
-                          TextButton(
-                            child: Text('취소', style: TextStyle(color: Colors.black54)),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          TextButton(
-                            child: Text('확인', style: TextStyle(color: Color(0xFFFFD66E))),
-                            onPressed: () {
-                              onChanged(tempTime);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    }
-                  );
+                      ),
+                      actions: [
+                        TextButton(
+                          child: Text('취소',
+                              style: TextStyle(color: Colors.black54)),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text('확인',
+                              style: TextStyle(color: Color(0xFFFFD66E))),
+                          onPressed: () {
+                            onChanged(tempTime);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  });
                 },
               );
             },
@@ -325,7 +348,7 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
     );
   }
 
-  // Widget _buildDivider() { // 이렇게 하니까 magin에 영향을 받음. 
+  // Widget _buildDivider() { // 이렇게 하니까 magin에 영향을 받음.
   // 각 설정항목을 개별적으로 padding위젯으로 감싸고 divider를 column의 child로 추가하는 방식을 넣음
   //   return Row(
   //     children: [

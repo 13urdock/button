@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:danchu/diary/diary.dart';
+
+import '/diary/diary.dart';
 
 class DanchuDraggable extends StatefulWidget {
+  final DateTime selectedDay;
+  const DanchuDraggable({Key? key, required this.selectedDay})
+      : super(key: key);
   @override
   _DanchuDraggableState createState() => _DanchuDraggableState();
 }
 
 class _DanchuDraggableState extends State<DanchuDraggable> {
+  //일기 목록
   List<DiaryEntry> entries = [];
 
   void _addEntry(String content) {
@@ -24,6 +29,7 @@ class _DanchuDraggableState extends State<DanchuDraggable> {
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
           decoration: BoxDecoration(
+            //draggablesheet 스타일
             color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
@@ -36,6 +42,7 @@ class _DanchuDraggableState extends State<DanchuDraggable> {
               children: [
                 Center(
                   child: Container(
+                    //회색 상단 바
                     width: 40,
                     height: 5,
                     margin: EdgeInsets.symmetric(vertical: 8),
@@ -45,7 +52,12 @@ class _DanchuDraggableState extends State<DanchuDraggable> {
                     ),
                   ),
                 ),
+                Text(
+                  '${widget.selectedDay.toString().split(' ')[0]}', //가져온 날짜 사용
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
                 IconButton(
+                  //목록 추가 버튼
                   icon: Icon(Icons.add),
                   onPressed: () {
                     Navigator.push(
@@ -59,6 +71,7 @@ class _DanchuDraggableState extends State<DanchuDraggable> {
                   },
                 ),
                 ListView.builder(
+                  //목록 스크롤
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: entries.length,
