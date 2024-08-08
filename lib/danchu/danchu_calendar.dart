@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:danchu/src/color.dart';
+
+import '/src/color.dart';
 
 class DanchuCalendar extends StatefulWidget {
-  const DanchuCalendar({Key? key}) : super(key: key);
+  final Function(DateTime) onDaySelected;
+  const DanchuCalendar({Key? key, required this.onDaySelected})
+      : super(key: key);
 
   @override
   _DanchuCalendarState createState() => _DanchuCalendarState();
@@ -37,6 +40,7 @@ class _DanchuCalendarState extends State<DanchuCalendar> {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
           });
+          widget.onDaySelected(selectedDay);
         },
         calendarStyle: CalendarStyles.calendarStyle,
         headerStyle: CalendarStyles.headerStyle,
