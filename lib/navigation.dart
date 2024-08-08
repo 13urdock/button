@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'src/color.dart';
 import 'calendar/calendar_page.dart';
 import 'danchu/danchu_page.dart';
-import 'setting/setting.dart';
+import 'profile/profile.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -19,7 +19,7 @@ class _NavigationState extends State<Navigation> {
   final List<Widget> _pages = [
     const CalendarPage(),
     const DanchuPage(),
-    const SettingApp(),
+    const Profile(),
   ];
 
   @override
