@@ -16,14 +16,14 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.danchuYellow,
+      appBar: AppBar(
+        title: Text('Danchu Calendar'),
         backgroundColor: AppColors.danchuYellow,
-        appBar: AppBar(
-          title: Text('Danchu Calendar'),
-          backgroundColor: AppColors.danchuYellow,
-        ),
-        body: Stack(children: [
-          Calendar(),
-          CalendarDraggable(),
-        ]));
+      ),
+      body: Stack(children: [
+        Calendar(),
+        CalendarDraggable(),
+      ]));
   }
 }
