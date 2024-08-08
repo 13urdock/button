@@ -14,8 +14,11 @@ dependencies:
   http: ^1.2.2
   table_calendar: ^3.1.2
   draggable_home: ^1.0.2
-
-  
+  cupertino_icons: ^1.0.6
+  scroll_date_picker: ^3.8.0
+  scroll_datetime_picker: ^0.1.2
+  intl: ^0.19.0
+  flutter_iconpicker: ^3.4.6
 
 dev_dependencies:
   flutter_test:
@@ -24,4 +27,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
