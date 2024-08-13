@@ -3,6 +3,7 @@ import 'profile_setting_notificationSetting.dart';
 import 'profile_setting_account.dart';
 import 'profile_setting_friend.dart';
 import 'src/color.dart';
+import 'profile_theme.dart';
 
 class ProfileSetting extends StatelessWidget {
   const ProfileSetting({super.key});
@@ -49,7 +50,7 @@ class ProfileSetting extends StatelessWidget {
             _buildButton(context, Icons.person, '계정 설정', ProfileSettingAccount(), 120),
             _buildButton(context, Icons.notifications, '알림 설정', ProfileSettingNotification(), 180),
             _buildButton(context, Icons.people, '친구', ProfileSettingFriend(), 240),
-            _buildButton(context, Icons.color_lens, '테마 설정', ThemeSettingsPage(), 300),
+            _buildButton(context, Icons.color_lens, '테마 설정', ProfileTheme(), 300),
             _buildButton(context, Icons.announcement, '공지', NoticePage(), 360),
           ],
         ),
