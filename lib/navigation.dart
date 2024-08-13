@@ -27,7 +27,7 @@ class _NavigationState extends State<Navigation> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: NavigationBar(
         backgroundColor: AppColors.white,
-        indicatorColor: AppColors.danchuYellow,
+        indicatorColor: AppColors.white,
         selectedIndex: _selectedIndex,
         onDestinationSelected: (int index) {
           setState(() {
@@ -36,19 +36,21 @@ class _NavigationState extends State<Navigation> {
         },
         destinations: <NavigationDestination>[
           NavigationDestination(
-            icon: Image.asset('assets/calendar-act.png', width: 24, height: 24),
+            icon:
+                Image.asset('assets/calendar-deact.png', width: 24, height: 24),
             selectedIcon:
                 Image.asset('assets/calendar-act.png', width: 24, height: 24),
             label: 'calendar',
           ),
           NavigationDestination(
-            icon: Image.asset('assets/Danchu-act.png', width: 24, height: 24),
+            icon: Image.asset('assets/Danchu-deact.png', width: 24, height: 24),
             selectedIcon:
                 Image.asset('assets/Danchu-act.png', width: 24, height: 24),
             label: 'danchu',
           ),
           NavigationDestination(
-            icon: Image.asset('assets/profile-act.png', width: 24, height: 24),
+            icon:
+                Image.asset('assets/profile-deact.png', width: 24, height: 24),
             selectedIcon:
                 Image.asset('assets/profile-act.png', width: 24, height: 24),
             label: 'Settings',
