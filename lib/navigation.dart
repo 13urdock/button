@@ -1,4 +1,3 @@
-import 'package:danchu/calendar/calendar.dart';
 import 'package:flutter/material.dart';
 
 import 'src/color.dart';
@@ -25,7 +24,7 @@ class _NavigationState extends State<Navigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex], // 선택된 인덱스에 해당하는 페이지 표시
+      body: _pages[_selectedIndex],
       bottomNavigationBar: NavigationBar(
         backgroundColor: AppColors.white,
         indicatorColor: AppColors.danchuYellow,
@@ -35,20 +34,23 @@ class _NavigationState extends State<Navigation> {
             _selectedIndex = index;
           });
         },
-        destinations: const <NavigationDestination>[
+        destinations: <NavigationDestination>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.folder),
-            icon: Icon(Icons.folder),
+            icon: Image.asset('assets/calendar-act.png', width: 24, height: 24),
+            selectedIcon:
+                Image.asset('assets/calendar-act.png', width: 24, height: 24),
             label: 'calendar',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
+            icon: Image.asset('assets/Danchu-act.png', width: 24, height: 24),
+            selectedIcon:
+                Image.asset('assets/Danchu-act.png', width: 24, height: 24),
             label: 'danchu',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.settings),
-            icon: Icon(Icons.settings_outlined),
+            icon: Image.asset('assets/profile-act.png', width: 24, height: 24),
+            selectedIcon:
+                Image.asset('assets/profile-act.png', width: 24, height: 24),
             label: 'Settings',
           ),
         ],
