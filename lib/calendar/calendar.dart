@@ -18,8 +18,8 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    _focusedDay = DateTime.now();
-    _selectedDay = DateTime.now();
+    _focusedDay = DateTime.now(); // 오늘 날짜
+    _selectedDay = DateTime.now(); // 선택된 날짜
   }
 
   @override
@@ -31,7 +31,7 @@ class _CalendarState extends State<Calendar> {
         firstDay: DateTime.utc(2010, 10, 16),
         lastDay: DateTime.utc(2030, 3, 14),
         focusedDay: _focusedDay,
-        selectedDayPredicate: (day) {
+        selectedDayPredicate: (day) { 
           return isSameDay(_selectedDay, day);
         },
         onDaySelected: (selectedDay, focusedDay) {
