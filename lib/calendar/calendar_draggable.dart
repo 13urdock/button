@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'calendar.dart';
-import 'add_schedule.dart';
-import 'schedule_list.dart';
+import 'calendar.dart'; // 날짜와 연결하기 위해서
+import 'calendar_add_todo.dart';
+import 'calendar_todo_list.dart';
 import '../models/todo_item.dart';
 
 class CalendarDraggable extends StatefulWidget {
@@ -56,7 +56,7 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                       onPressed: () async {
                         final schedule = await Navigator.push( // schedule에 pop하면서 리턴되는 TodoItem을 받습니다
                           context,
-                          MaterialPageRoute(builder: (context) => AddSchedulePage()), // TodoItem 리턴
+                          MaterialPageRoute(builder: (context) => AddTodo()), // TodoItem 리턴
                         );
                         if (schedule != null && schedule is TodoItem){
                           setState((){
