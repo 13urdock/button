@@ -1,7 +1,7 @@
 flutter_native_splash:
   color: "#ffffff"
-  image: lib/src/logo3D.png
+  image: assets/danchu_3Dlogo.png
   color_dark: "#121212"
-  image_dark: lib/src/logo3D.png
+  image_dark: assets/danchu_3Dlogo.png
 
 
