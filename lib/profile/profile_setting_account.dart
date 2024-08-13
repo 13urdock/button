@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'profile_deleteAccount.dart';
 import 'src/color.dart';
+import 'profile_setting_account_resetPassward.dart';
 // 각 페이지에 대한 import 문을 추가해야함. 할 예정
 // import 'profile_page.dart';
 // import 'password_setting_page.dart';
@@ -71,7 +72,7 @@ class ProfileSettingAccount extends StatelessWidget {
               ),
             ),
             _buildButton(context, Icons.person, '프로필', 114, ProfilePage()),
-            _buildButton(context, Icons.lock, '비밀번호 설정', 182, PasswordSettingPage()),
+            _buildButton(context, Icons.lock, '비밀번호 설정', 182, ProfileSettingAccountResetPassward()),
             _buildButton(context, Icons.exit_to_app, '탈퇴하기', 250, ProfileDeleteAccount()),
           ],
         ),
