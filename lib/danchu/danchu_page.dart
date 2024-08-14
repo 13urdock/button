@@ -3,7 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '/src/color.dart';
 import 'danchu_calendar.dart';
-import 'danchu_draggable.dart';
+//import 'danchu_draggable.dart';
 
 class DanchuPage extends StatefulWidget {
   const DanchuPage({Key? key}) : super(key: key);
@@ -33,7 +33,7 @@ class _DanchuPageState extends State<DanchuPage> {
         children: [
           DanchuCalendar(onDaySelected: _onDaySelected),
           SizedBox.expand(
-            child: DanchuDraggable(selectedDay: _selectedDay),
+            //child: DanchuDraggable(selectedDay: _selectedDay),
           ),
         ],
       ),
