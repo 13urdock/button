@@ -14,6 +14,7 @@ class _CalendarState extends State<Calendar> {
   late DateTime _selectedDay;
 
   DateTime get selectedDay => _selectedDay;
+  DateTime get focusedDay => _focusedDay;
 
   @override
   void initState() {

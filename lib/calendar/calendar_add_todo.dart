@@ -34,7 +34,7 @@ class _AddTodoState extends State<AddTodo> {
           padding: EdgeInsets.all(screenSize.width * 0.05), // 화면 너비의 5%를 패딩으로 사용
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: [ // 할 일 추가 세팅들
               _buildHeader(screenSize),
               SizedBox(height: screenSize.height * 0.02),
               _buildTimeSettings(screenSize, isSmallScreen),
@@ -50,7 +50,7 @@ class _AddTodoState extends State<AddTodo> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton( // 완료 버튼
         child: Icon(Icons.check),
         onPressed: () {
           if (_titleController.text.isNotEmpty) {
@@ -66,8 +66,8 @@ class _AddTodoState extends State<AddTodo> {
     );
   }
 
-  Widget _buildHeader(Size screenSize){
-    return Row( // 아이콘 색상과 todo 제목
+  Widget _buildHeader(Size screenSize){ // 아이콘 색상과 todo 제목
+    return Row( 
       children: [
         GestureDetector(
           onTap: () {
