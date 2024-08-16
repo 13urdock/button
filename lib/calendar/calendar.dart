@@ -2,44 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:danchu/src/color.dart';
 
-class Calendar extends StatefulWidget {
-  const Calendar({Key? key}) : super(key: key);
+class Calendar extends StatelessWidget {
+  final DateTime selectedDay;
+  final DateTime focusedDay;
+  final Function(DateTime, DateTime) onDaySelected;
 
-  @override
-  _CalendarState createState() => _CalendarState();
-}
-
-class _CalendarState extends State<Calendar> {
-  late DateTime _focusedDay;
-  late DateTime _selectedDay;
-
-  DateTime get selectedDay => _selectedDay;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusedDay = DateTime.now();
-    _selectedDay = DateTime.now();
-  }
+  const Calendar({
+    Key? key,
+    required this.selectedDay,
+    required this.focusedDay,
+    required this.onDaySelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    //calendar
     return Container(
+      decoration: BoxDecoration(
+        color: AppColors.danchuYellow,
+      ),
       margin: const EdgeInsets.all(6.0),
       child: TableCalendar(
         firstDay: DateTime.utc(2010, 10, 16),
         lastDay: DateTime.utc(2030, 3, 14),
-        focusedDay: _focusedDay,
+        focusedDay: focusedDay,
         selectedDayPredicate: (day) {
-          return isSameDay(_selectedDay, day);
+          return isSameDay(selectedDay, day);
         },
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-        },
+        onDaySelected: onDaySelected,
         calendarStyle: CalendarStyles.calendarStyle,
         headerStyle: CalendarStyles.headerStyle,
         calendarBuilders: CalendarStyles.calendarBuilders,
@@ -50,7 +39,6 @@ class _CalendarState extends State<Calendar> {
 
 class CalendarStyles {
   static CalendarStyle get calendarStyle => CalendarStyle(
-        //calendar style
         selectedDecoration: BoxDecoration(
           color: AppColors.deepYellow,
           shape: BoxShape.circle,
@@ -72,7 +60,6 @@ class CalendarStyles {
       );
 
   static CalendarBuilders get calendarBuilders => CalendarBuilders(
-        //주말 색변경
         dowBuilder: (context, day) {
           if (day.weekday == DateTime.sunday) {
             return Center(
