@@ -16,7 +16,7 @@ class CalendarDraggable extends StatefulWidget {
 }
 
 class _CalendarDraggableState extends State<CalendarDraggable> {
-  final List<TodoItem> todoItems = []; // 일정들 담아놓는 리스트 나중에 데이터베이스와 연결하기
+  final List<TodoItem> todoItems = []; // 선택된 날의 일정을 담아놓는 일정 리스트. 나중에 데이터베이스와 연결하기
 
 String getDateText(DateTime selectedDay){
   final now = DateTime.now();

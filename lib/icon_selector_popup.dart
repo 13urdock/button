@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:danchu/models/custom_todo_icon.dart';
+import 'package:danchu/models/custom_circle_icon.dart';
 
 class IconSelector extends StatefulWidget {
   final Function(Color) onColorSelected;

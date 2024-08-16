@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:danchu/icon_selector_popup.dart';
-
 import '../models/todo_item.dart';
-import '../models/custom_todo_icon.dart';
+import '../models/custom_circle_icon.dart';
+import 'calendar_draggable.dart';
 
 class AddTodo extends StatefulWidget {
   @override
@@ -10,19 +10,19 @@ class AddTodo extends StatefulWidget {
 }
 
 class _AddTodoState extends State<AddTodo> {
-  bool isAllDay = false;
-  bool isRoutine = false;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   Color _selectedColor = Color(0xffb7b7b7);
-  DateTime? _selectedDate;
-  IconData _selectedIcon = Icons.assignment;
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _beginTime = TimeOfDay.now();
+  TimeOfDay _endTime = TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1);
+  bool isAllDay = false;
+  bool isRoutine = false;
+  List<DateTime> _routineDates = [];
 
   @override
   Widget build(BuildContext context) {
-    // 화면의 크기를 가져옵니다.
     final screenSize = MediaQuery.of(context).size;
-    final padding = MediaQuery.of(context).padding;
     final isSmallScreen = screenSize.width < 600;
     
     return Scaffold(
@@ -31,71 +31,49 @@ class _AddTodoState extends State<AddTodo> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(screenSize.width * 0.05), // 화면 너비의 5%를 패딩으로 사용
+          padding: EdgeInsets.all(screenSize.width * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [ // 할 일 추가 세팅들
+            children: [
               _buildHeader(screenSize),
               SizedBox(height: screenSize.height * 0.02),
-              _buildTimeSettings(screenSize, isSmallScreen),
+              _buildDatePicker(screenSize),
               SizedBox(height: screenSize.height * 0.02),
               _buildAllDayToggle(screenSize),
-              if (!isAllDay) _buildTimeDropdowns(screenSize, isSmallScreen),
+              if (!isAllDay) _buildTimeSettings(screenSize, isSmallScreen),
               _buildRoutineToggle(screenSize),
               SizedBox(height: screenSize.height * 0.02),
               if (isRoutine) _buildRoutineCalendar(screenSize),
-              _buildNotificationSettings(screenSize),
+              _buildDescriptionField(screenSize),
               SizedBox(height: screenSize.height * 0.02),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton( // 완료 버튼
+      floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
-        onPressed: () {
-          if (_titleController.text.isNotEmpty) {
-            Navigator.of(context).pop(TodoItem(
-              title: _titleController.text,
-              description: _descriptionController.text,
-              dueDate: _selectedDate,
-              icon: _selectedIcon,
-            ));
-          }
-        },
+        onPressed: _saveTodoItem,
       ),
     );
   }
 
-  Widget _buildHeader(Size screenSize){ // 아이콘 색상과 todo 제목
+  Widget _buildHeader(Size screenSize) {
     return Row( 
       children: [
         GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return IconSelector(
-                  onColorSelected: (Color color) {
-                    setState(() {
-                      _selectedColor = color;
-                    });
-                  },
-                );
-              },
-            );
-          },
+          onTap: () => _showIconSelector(),
           child: Container(
-            width: screenSize.width * 0.1,  // 명시적으로 너비 설정
+            width: screenSize.width * 0.1,
             height: screenSize.width * 0.1,
             padding: EdgeInsets.all(screenSize.width * 0.01),
             child: CustomCircleIcon(
               isSelected: true,
               color: _selectedColor,
-              size: screenSize.width * 0.08, // 화면 너비의 8%로 아이콘 크기 설정
+              size: screenSize.width * 0.08,
             ),
           ),
         ),
-        SizedBox(width: screenSize.width * 0.03), // 간격 추가
+        SizedBox(width: screenSize.width * 0.03),
         Expanded(
           child: TextField(
             controller: _titleController,
@@ -106,30 +84,22 @@ class _AddTodoState extends State<AddTodo> {
     );
   }
 
-  Widget _buildTimeSettings(screenSize, isSmallScreen){
-    return isSmallScreen
-    ? Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.access_time, size: screenSize.width * 0.05),
-            SizedBox(width: screenSize.width * 0.02),
-            Text('일정 시작 날짜', style: TextStyle(fontSize: screenSize.width * 0.04)),
+  Widget _buildDatePicker(Size screenSize) {
+    return InkWell(
+      onTap: () => _selectDate(context),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: '날짜',
+          border: OutlineInputBorder(),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text('${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}'),
+            Icon(Icons.calendar_today),
           ],
         ),
-        SizedBox(height: screenSize.height * 0.01),
-        Text('일정 시작 시간', style: TextStyle(fontSize: screenSize.width * 0.04)),
-      ],
-    )
-    : Row(
-      children: [
-        Icon(Icons.access_time, size: screenSize.width * 0.03),
-        SizedBox(width: screenSize.width * 0.01),
-        Text('일정 시작 날짜', style: TextStyle(fontSize: screenSize.width * 0.025)),
-        Spacer(),
-        Text('일정 시작 시간', style: TextStyle(fontSize: screenSize.width * 0.025)),
-      ],
+      ),
     );
   }
 
@@ -150,44 +120,37 @@ class _AddTodoState extends State<AddTodo> {
     );
   }
 
-  Widget _buildTimeDropdowns(Size screenSize, bool isSmallScreen) {
+  Widget _buildTimeSettings(Size screenSize, bool isSmallScreen) {
     return isSmallScreen
-    ? Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DropdownButton(
-            items: [],
-            onChanged: null,
-            hint: Text('시작 시간', style: TextStyle(fontSize: screenSize.width * 0.04)),
-          ),
-          SizedBox(height: screenSize.height * 0.01),
-          DropdownButton(
-            items: [],
-            onChanged: null,
-            hint: Text('종료 시간', style: TextStyle(fontSize: screenSize.width * 0.04)),
-          ),
-        ],
-      )
-    : Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: DropdownButton(
-              items: [],
-              onChanged: null,
-              hint: Text('시작 시간', style: TextStyle(fontSize: screenSize.width * 0.025)),
-            ),
-          ),
-          SizedBox(width: screenSize.width * 0.02),
-          Expanded(
-            child: DropdownButton(
-              items: [],
-              onChanged: null,
-              hint: Text('종료 시간', style: TextStyle(fontSize: screenSize.width * 0.025)),
-            ),
-          ),
-        ],
-      );
+      ? Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildTimePicker('시작 시간', _beginTime, (time) => setState(() => _beginTime = time!)),
+            SizedBox(height: screenSize.height * 0.01),
+            _buildTimePicker('종료 시간', _endTime, (time) => setState(() => _endTime = time!)),
+          ],
+        )
+      : Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: _buildTimePicker('시작 시간', _beginTime, (time) => setState(() => _beginTime = time!))),
+            SizedBox(width: screenSize.width * 0.02),
+            Expanded(child: _buildTimePicker('종료 시간', _endTime, (time) => setState(() => _endTime = time!))),
+          ],
+        );
+  }
+
+  Widget _buildTimePicker(String label, TimeOfDay time, Function(TimeOfDay?) onChanged) {
+    return InkWell(
+      onTap: () => _selectTime(context, onChanged),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
+        ),
+        child: Text('${time.format(context)}'),
+      ),
+    );
   }
 
   Widget _buildRoutineToggle(Size screenSize) {
@@ -210,23 +173,81 @@ class _AddTodoState extends State<AddTodo> {
   }
 
   Widget _buildRoutineCalendar(Size screenSize) {
+    // 여기에 캘린더 드래그 가능한 위젯 구현
     return Container(
       height: screenSize.height * 0.3,
       child: Center(
-        child: Text('캘린더 위젯', style: TextStyle(fontSize: screenSize.width * 0.04)),
+        child: Text('캘린더 위젯 (구현 필요)', style: TextStyle(fontSize: screenSize.width * 0.04)),
       ),
     );
   }
 
-  Widget _buildNotificationSettings(Size size) {
-    return Row(
-      children: [
-        Icon(Icons.notifications, size: size.width * 0.05),
-        SizedBox(width: size.width * 0.02),
-        Text('푸시 알림', style: TextStyle(fontSize: size.width * 0.04)),
-        Spacer(),
-        Switch(value: true, onChanged: null),
-      ],
+  Widget _buildDescriptionField(Size screenSize) {
+    return TextField(
+      controller: _descriptionController,
+      maxLines: 3,
+      decoration: InputDecoration(
+        labelText: '설명',
+        border: OutlineInputBorder(),
+      ),
     );
+  }
+
+  void _showIconSelector() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return IconSelector(
+          onColorSelected: (Color color) {
+            setState(() {
+              _selectedColor = color;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate)
+      setState(() {
+        _selectedDate = picked;
+      });
+  }
+
+  Future<void> _selectTime(BuildContext context, Function(TimeOfDay?) onChanged) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      onChanged(picked);
+    }
+  }
+
+  void _saveTodoItem() {
+    if (_titleController.text.isNotEmpty && _descriptionController.text.isNotEmpty) {
+      final newTodo = TodoItem(
+        date: _selectedDate,
+        title: _titleController.text,
+        description: _descriptionController.text,
+        beginTime: isAllDay ? null : DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _beginTime.hour, _beginTime.minute),
+        endTime: isAllDay ? null : DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _endTime.hour, _endTime.minute),
+        isRoutine: isRoutine,
+        routine: isRoutine ? _routineDates : null,
+      );
+      Navigator.of(context).pop(newTodo);
+    } else {
+      // 사용자에게 필수 필드를 채우라는 알림을 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('제목과 설명을 모두 입력해주세요.')),
+      );
+    }
   }
 }
