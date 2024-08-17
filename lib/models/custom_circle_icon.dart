@@ -1,39 +1,31 @@
 import 'package:flutter/material.dart';
 
 class CustomCircleIcon extends StatelessWidget {
-  final bool isSelected;
-  final VoidCallback onPressed;
   final double size;
   final Color color;
+  final bool isSelected;
 
   const CustomCircleIcon({
     Key? key,
-    required this.isSelected,
-    required this.onPressed,
     this.size = 30,
-    this.color = Colors.blue,
+    this.color = const Color(0xffffc56e),
+    this.isSelected = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: CustomPaint(
-        size: Size(size, size),
-        painter: _CirclePainter(
-          isSelected: isSelected,
-          color: color,
-        ),
-      ),
+    return CustomPaint(
+      size: Size(size, size),
+      painter: _CirclePainter(color: color, isSelected: isSelected),
     );
   }
 }
 
 class _CirclePainter extends CustomPainter {
-  final bool isSelected;
   final Color color;
+  final bool isSelected;
 
-  _CirclePainter({required this.isSelected, required this.color});
+  _CirclePainter({required this.color, required this.isSelected});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -53,5 +45,7 @@ class _CirclePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _CirclePainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.isSelected != isSelected;
+  }
 }

@@ -19,7 +19,7 @@ class TodoListState extends State<TodoList> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      // 리스트 띄우는 화면
+      // 투두 리스트 띄우는 화면
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       children: widget.todos.asMap().entries.map((entry) {

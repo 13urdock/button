@@ -1,23 +1,12 @@
-// 07.31 10:24 기준
-// 설정 - 문의사항 화면 
-// push 아직 안 함
-// 연결 되어있는 곳 없음
-
-// 합숙 마지막날 main으로 커밋 완료
-
-// 0808 이름 변경
-// contack.dart -> profile_contact.dart
-
-import 'src/color.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'src/color.dart';
 
 class ProfileContact extends StatefulWidget {
-  const ProfileContact({super.key});
+  const ProfileContact({Key? key}) : super(key: key);
 
   @override
-  _ProfileContactState createState() => _ProfileContactState(); //이거 좀 손보자..
+  _ProfileContactState createState() => _ProfileContactState();
 }
 
 class _ProfileContactState extends State<ProfileContact> {
@@ -67,23 +56,13 @@ class _ProfileContactState extends State<ProfileContact> {
     return true;
   }
 
-  Future<void> _sendDataToServer() async {
-    final url = Uri.parse('https://your-api-endpoint.com/contact'); // 문의사항 받을 링크 수정 필요
-    final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'nickname': _nicknameController.text,
-        'email': _emailController.text,
-        'message': _messageController.text,
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to submit contact form');
-    }
+  Future<void> _sendDataToFirestore() async {
+    await FirebaseFirestore.instance.collection('inquiries').add({
+      'nickname': _nicknameController.text,
+      'email': _emailController.text,
+      'message': _messageController.text,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 
   void _showSnackBar(String message) {
@@ -115,7 +94,7 @@ class _ProfileContactState extends State<ProfileContact> {
       });
 
       try {
-        await _sendDataToServer();
+        await _sendDataToFirestore();
         _showSnackBar('문의가 성공적으로 제출되었습니다.');
         _nicknameController.clear();
         _emailController.clear();
@@ -133,7 +112,7 @@ class _ProfileContactState extends State<ProfileContact> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.danchuYellow,  // 여기에 배경색을 지정합니다.
+      backgroundColor: AppColors.danchuYellow,
       appBar: AppBar(
         title: Text('문의화면'),
         backgroundColor: AppColors.danchuYellow,
@@ -143,7 +122,7 @@ class _ProfileContactState extends State<ProfileContact> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              SizedBox(height: 80),  // 상단 여백
+              SizedBox(height: 80),
               Container(
                 padding: EdgeInsets.all(20),
                 decoration: ShapeDecoration(
@@ -206,7 +185,8 @@ class _ProfileContactState extends State<ProfileContact> {
                             onPressed: _submitForm,
                             child: Text('제출'),
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white, backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.black,
                               minimumSize: Size(260, 38),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(9),
