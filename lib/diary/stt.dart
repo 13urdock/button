@@ -59,7 +59,7 @@ class _STTState extends State<STT> {
           children: [
             GestureDetector(
               onTap: _listen,
-              child: Image.asset('assets/mic.png'),
+              child: Image.asset('assets/micbutton.png'),
             ),
             SizedBox(height: 20),
             Text(
