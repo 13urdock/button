@@ -43,7 +43,8 @@ class _SettingPageState extends State<SettingPage> {
                 flex: 1,
                 child: Center(
                   child: CustomPaint(
-                    size: Size(constraints.maxWidth / 3, constraints.maxWidth / 3),
+                    size: Size(
+                        constraints.maxWidth / 3, constraints.maxWidth / 3),
                     painter: CirclePainter(),
                   ),
                 ),
@@ -63,26 +64,29 @@ class _SettingPageState extends State<SettingPage> {
                       _buildButton('테마 설정', () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const MyApp()),
+                          MaterialPageRoute(builder: (context) => MyApp()),
                         );
                       }),
                       // danchu_collection.dart
                       _buildButton('모은 단추 확인하기', () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const MyApp()),
+                          MaterialPageRoute(
+                              builder: (context) => const MyApp()),
                         );
                       }),
                       _buildButton('개발자에게 문의하기', () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const MyApp()),
+                          MaterialPageRoute(
+                              builder: (context) => const MyApp()),
                         );
                       }),
                       _buildButton('계정 탈퇴하기', () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const MyApp()),
+                          MaterialPageRoute(
+                              builder: (context) => const MyApp()),
                         );
                       }),
                     ],
@@ -114,7 +118,7 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue  // 원하는 색상으로 변경 가능
+      ..color = Colors.blue // 원하는 색상으로 변경 가능
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(

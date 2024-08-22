@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import '/login/logout.dart';
 import 'src/color.dart';
 import 'profile_contact.dart';
 import 'profile_setting_account.dart';
 import 'profile_setting.dart';
-
 
 class Profile extends StatelessWidget {
   const Profile({Key? key}) : super(key: key);
@@ -68,11 +68,17 @@ class Profile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
                     children: [
                       SizedBox(height: 20), // 상단 여백 추가
-                      _buildButton(context, Icons.settings, '설정', ProfileSetting()), //완료
+                      _buildButton(
+                          context, Icons.settings, '설정', ProfileSetting()), //완료
                       SizedBox(height: 25), // 버튼 사이 간격
-                      _buildButton(context, Icons.settings_accessibility_outlined, '모은 단추 확인하기', ProfileSettingAccount()), //현 계정 세팅 페이지
+                      _buildButton(
+                          context,
+                          Icons.settings_accessibility_outlined,
+                          '모은 단추 확인하기',
+                          ProfileSettingAccount()), //현 계정 세팅 페이지
                       SizedBox(height: 25), // 버튼 사이 간격
-                      _buildButton(context, Icons.contact_support, '개발자에게 문의하기', ProfileContact()),
+                      _buildButton(context, Icons.contact_support, '개발자에게 문의하기',
+                          ProfileContact()),
                       SizedBox(height: 25), // 버튼 사이 간격
                       _buildButton(context, Icons.logout, '로그아웃', LogoutPage()),
                     ],
@@ -87,7 +93,8 @@ class Profile extends StatelessWidget {
   }
 
   // 버튼 위젯 생성 함수
-  Widget _buildButton(BuildContext context, IconData icon, String text, Widget page) {
+  Widget _buildButton(
+      BuildContext context, IconData icon, String text, Widget page) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -137,7 +144,12 @@ class LogoutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('로그아웃')),
-      body: Center(child: Text('로그아웃 페이지')),
+      body: Center(
+        child: ElevatedButton(
+          child: Text('로그아웃'),
+          onPressed: () => signOut(context),
+        ),
+      ),
     );
   }
 }
