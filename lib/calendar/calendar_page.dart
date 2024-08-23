@@ -5,6 +5,7 @@ import '/src/color.dart';
 import 'calendar.dart';
 import 'calendar_draggable.dart';
 import 'show_calendar.dart';
+import 'show_friend_list.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -30,17 +31,20 @@ class _CalendarPageState extends State<CalendarPage> {
         title: Text('Danchu Calendar'),
         backgroundColor: AppColors.danchuYellow,
       ),
-      body: Container(
-        color: AppColors.danchuYellow,
-        child:  
-          Stack(
-            children: [
-            //ShowFriendList(),
-            ShowCalendar(onDaySelected: _onDaySelected,),
-            CalendarDraggable(selectedDay: _selectedDay),
-          ]
-          )
-      )
+      body: 
+      Column(
+        children: [
+          ShowFriendList(),
+          Expanded(
+            child: Stack(
+              children: [
+                ShowCalendar(onDaySelected: _onDaySelected),
+                CalendarDraggable(selectedDay: _selectedDay),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
