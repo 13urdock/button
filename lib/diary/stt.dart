@@ -1,48 +1,157 @@
-//STT
-
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-//import 'package:permission_handler/permission_handler.dart';//권한패키지 오류....
+import 'package:flutter/services.dart';
+import 'package:google_speech/google_speech.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class STT extends StatefulWidget {
+  final DateTime selectedDate;
+
+  const STT({Key? key, required this.selectedDate}) : super(key: key);
+
   @override
   _STTState createState() => _STTState();
 }
 
 class _STTState extends State<STT> {
-  late stt.SpeechToText _speech;
   bool _isListening = false;
   String _text = '';
+  late SpeechToText speechToText;
+  final DatabaseReference _database = FirebaseDatabase.instance.reference();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
+  String? _recordingPath;
 
   @override
   void initState() {
     super.initState();
-    _speech = stt.SpeechToText();
-    _initSpeechAndPermission();
+    _initSpeech();
+    _initRecorder();
   }
 
-  void _initSpeechAndPermission() async {
-    //await Permission.microphone.request();
-    await _speech.initialize();
+  void _initSpeech() async {
+    final serviceAccount = ServiceAccount.fromString(
+      '${(await rootBundle.loadString('assets/psyched-era-430113-v1-7b2f431ade12.json'))}',
+    );
+    speechToText = SpeechToText.viaServiceAccount(serviceAccount);
+  }
+
+  Future<void> _initRecorder() async {
+    await _recorder.openRecorder();
+  }
+
+  Future<bool> _requestPermissions() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('마이크 권한이 필요합니다.')),
+      );
+      return false;
+    }
+    return true;
   }
 
   void _listen() async {
+    final hasPermission = await _requestPermissions();
+    if (!hasPermission) return;
+
     if (!_isListening) {
-      bool available = await _speech.initialize();
-      if (available) {
-        setState(() => _isListening = true);
-        _speech.listen(
-          onResult: (result) => setState(() {
-            _text = result.recognizedWords;
-          }),
-          localeId: 'ko_KR',
-        );
-      }
+      setState(() => _isListening = true);
+      
+      // Start recording
+      _recordingPath = await _startRecording();
+      
+      final config = RecognitionConfig(
+        encoding: AudioEncoding.LINEAR16,
+        model: RecognitionModel.basic,
+        enableAutomaticPunctuation: true,
+        sampleRateHertz: 16000,
+        languageCode: 'ko-KR',
+      );
+
+      final audioStream = await _getAudioStream();
+
+      final streamingConfig = StreamingRecognitionConfig(
+        config: config,
+        interimResults: true,
+      );
+
+      final responseStream = speechToText.streamingRecognize(
+        streamingConfig,
+        audioStream,
+      );
+
+      responseStream.listen((data) {
+        setState(() {
+          _text = data.results
+              .map((e) => e.alternatives.first.transcript)
+              .join('\n');
+        });
+      }, onDone: () {
+        setState(() => _isListening = false);
+        _stopRecording();
+        _uploadAudioAndSaveTranscript();
+      });
     } else {
       setState(() => _isListening = false);
-      _speech.stop();
-      Navigator.pop(context, _text);
+      _stopRecording();
     }
+  }
+
+  Future<String> _startRecording() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+    await _recorder.startRecorder(toFile: path, codec: Codec.aacADTS);
+    return path;
+  }
+
+  Future<void> _stopRecording() async {
+    await _recorder.stopRecorder();
+  }
+
+  Future<Stream<List<int>>> _getAudioStream() async {
+    if (_recordingPath == null) {
+      throw Exception('Recording path is null');
+    }
+    return File(_recordingPath!).openRead();
+  }
+
+  Future<void> _uploadAudioAndSaveTranscript() async {
+    if (_auth.currentUser != null && _recordingPath != null) {
+      String userId = _auth.currentUser!.uid;
+      String dateString = "${widget.selectedDate.year}-${widget.selectedDate.month.toString().padLeft(2, '0')}-${widget.selectedDate.day.toString().padLeft(2, '0')}";
+      
+      // Upload audio file to Firebase Storage
+      final audioFile = File(_recordingPath!);
+      final audioRef = _storage.ref('audio/$userId/$dateString.aac');
+      await audioRef.putFile(audioFile);
+
+      // Save transcript to Firebase Realtime Database
+      await _database.child('diaries').child(userId).child(dateString).set({
+        'content': _text,
+        'audioUrl': await audioRef.getDownloadURL(),
+        'timestamp': ServerValue.timestamp,
+      });
+
+      Navigator.pop(context, _text);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('로그인이 필요하거나 녹음에 실패했습니다.')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _recorder.closeRecorder();
+    super.dispose();
   }
 
   @override
@@ -59,7 +168,7 @@ class _STTState extends State<STT> {
           children: [
             GestureDetector(
               onTap: _listen,
-              child: Image.asset('assets/mic.png'),
+              child: Image.asset('assets/micbutton.png'),
             ),
             SizedBox(height: 20),
             Text(

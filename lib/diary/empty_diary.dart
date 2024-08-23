@@ -1,7 +1,6 @@
-//빈일기, 일기 작성 -> 저장
-
 import 'package:flutter/material.dart';
-
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '/src/color.dart';
 import 'diary_entry.dart';
 import 'stt.dart';
@@ -17,6 +16,30 @@ class EmptyDiary extends StatefulWidget {
 
 class _EmptyDiaryState extends State<EmptyDiary> {
   TextEditingController _diaryController = TextEditingController();
+  final DatabaseReference _database = FirebaseDatabase.instance.reference();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDiaryContent();
+  }
+
+  void _loadDiaryContent() async {
+    if (_auth.currentUser != null) {
+      String userId = _auth.currentUser!.uid;
+      String dateString = "${widget.selectedDate.year}-${widget.selectedDate.month.toString().padLeft(2, '0')}-${widget.selectedDate.day.toString().padLeft(2, '0')}";
+      
+      DatabaseEvent event = await _database.child('diaries').child(userId).child(dateString).once();
+      
+      if (event.snapshot.value != null) {
+        Map<dynamic, dynamic> diaryData = event.snapshot.value as Map<dynamic, dynamic>;
+        setState(() {
+          _diaryController.text = diaryData['content'] ?? '';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +54,7 @@ class _EmptyDiaryState extends State<EmptyDiary> {
             onPressed: () async {
               final result = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => STT()),
+                MaterialPageRoute(builder: (context) => STT(selectedDate: widget.selectedDate)),
               );
               if (result != null) {
                 setState(() {
@@ -56,7 +79,7 @@ class _EmptyDiaryState extends State<EmptyDiary> {
               color: Colors.white,
               child: Center(
                 child: Image.asset(
-                  'assets/danchu_logo.png',
+                  'assets/danchu_3Dlogo.png',
                 ),
               ),
             ),
@@ -88,7 +111,6 @@ class _EmptyDiaryState extends State<EmptyDiary> {
   }
 
   Widget _buildContentBox(BuildContext context) {
-    //일기 작성
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
@@ -115,13 +137,26 @@ class _EmptyDiaryState extends State<EmptyDiary> {
     );
   }
 
-  void _saveDiary(BuildContext context) {
-    //내용, 날짜 저장
+  void _saveDiary(BuildContext context) async {
     if (_diaryController.text.isNotEmpty) {
-      Navigator.pop(
-        context,
-        DiaryEntry(content: _diaryController.text, date: widget.selectedDate),
-      );
+      if (_auth.currentUser != null) {
+        String userId = _auth.currentUser!.uid;
+        String dateString = "${widget.selectedDate.year}-${widget.selectedDate.month.toString().padLeft(2, '0')}-${widget.selectedDate.day.toString().padLeft(2, '0')}";
+        
+        await _database.child('diaries').child(userId).child(dateString).set({
+          'content': _diaryController.text,
+          'timestamp': ServerValue.timestamp,
+        });
+
+        Navigator.pop(
+          context,
+          DiaryEntry(content: _diaryController.text, date: widget.selectedDate),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('로그인이 필요합니다.')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('일기 내용을 입력해주세요.')),
