@@ -26,6 +26,7 @@ dependencies:
   flutter_iconpicker: ^3.4.6
   speech_to_text: ^6.6.2
   firebase_database: ^10.5.7
+  cached_network_image: ^3.4.0
 
 dev_dependencies:
   flutter_test:
