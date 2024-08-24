@@ -137,20 +137,30 @@ class _EmptyDiaryState extends State<EmptyDiary> {
     );
   }
 
-  void _saveDiary(BuildContext context) async {
+// 일단 danchu 필드를 미정으로 해둠
+
+    void _saveDiary(BuildContext context) async {
     if (_diaryController.text.isNotEmpty) {
       if (_auth.currentUser != null) {
         String userId = _auth.currentUser!.uid;
         String dateString = "${widget.selectedDate.year}-${widget.selectedDate.month.toString().padLeft(2, '0')}-${widget.selectedDate.day.toString().padLeft(2, '0')}";
         
+        // 'danchu' 값을 "미정"으로 설정하거나, 필요에 따라 다른 값으로 설정할 수 있습니다.
+        String danchu = "미정";
+        
         await _database.child('diaries').child(userId).child(dateString).set({
           'content': _diaryController.text,
           'timestamp': ServerValue.timestamp,
+          'danchu': danchu,  // 데이터베이스에 'danchu' 필드 추가
         });
 
         Navigator.pop(
           context,
-          DiaryEntry(content: _diaryController.text, date: widget.selectedDate),
+          DiaryEntry(
+            content: _diaryController.text, 
+            date: widget.selectedDate,
+            danchu: danchu,  // DiaryEntry 생성 시 'danchu' 매개변수 추가
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

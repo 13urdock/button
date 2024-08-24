@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'src/color.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '/login/logout.dart';
 
 class ProfileDeleteAccount extends StatelessWidget {
   //final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -22,22 +24,6 @@ class ProfileDeleteAccount extends StatelessWidget {
   //     );
   //   }
   // }
-
-  void _logout(BuildContext context) {
-    // await _auth.signOut();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CustomAlertDialog(
-          title: '로그아웃',
-          content: '로그아웃 되었습니다.',
-          onConfirm: () {
-            Navigator.of(context).pushReplacementNamed('/check_here'); // 여기에 로그아웃 후 돌아갈 페이지 연결하면 됨!
-          },
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,13 +120,14 @@ class ProfileDeleteAccount extends StatelessWidget {
               left: 20,
               top: 654,
               child: GestureDetector(
-                onTap: () => _logout(context),
+                onTap: () => signOut(context),
                 child: Container(
                   width: 175,
                   height: 38,
                   decoration: ShapeDecoration(
                     color: Colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(9)),
                   ),
                   child: Center(
                     child: Text(
@@ -181,7 +168,8 @@ class ProfileDeleteAccount extends StatelessWidget {
                   height: 38,
                   decoration: ShapeDecoration(
                     color: Colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(9)),
                   ),
                   child: Center(
                     child: Text(

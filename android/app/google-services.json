@@ -13,7 +13,20 @@
           "package_name": "com.danchu.danchu"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "881967360899-qg9cfaodkpugi10g2fhbkt3hdlj8pdem.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.danchu.danchu",
+            "certificate_hash": "02f1f79f88c3b45647550a77d0d4c08725df4ad7"
+          }
+        },
+        {
+          "client_id": "881967360899-gq0ngrvsr8re0rn8cnt8u3bvvf87fkni.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA0eewTTEHQitlirNHcsMevCWmPDDbX8yk"
@@ -21,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "881967360899-gq0ngrvsr8re0rn8cnt8u3bvvf87fkni.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "881967360899-alt0qcdblsidleg5pctfvtmla9lfpds1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.danchu"
+              }
+            }
+          ]
         }
       }
     },
@@ -32,7 +57,12 @@
           "package_name": "com.example.danchu"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "881967360899-gq0ngrvsr8re0rn8cnt8u3bvvf87fkni.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA0eewTTEHQitlirNHcsMevCWmPDDbX8yk"
@@ -40,7 +70,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "881967360899-gq0ngrvsr8re0rn8cnt8u3bvvf87fkni.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "881967360899-alt0qcdblsidleg5pctfvtmla9lfpds1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.danchu"
+              }
+            }
+          ]
         }
       }
     }
