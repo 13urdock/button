@@ -69,75 +69,82 @@ class _STTState extends State<STT> {
   }
 
   void _listen() async {
-  final hasPermission = await _requestPermissions();
-  if (!hasPermission) return;
+    final hasPermission = await _requestPermissions();
+    if (!hasPermission) return;
 
-  if (!_isListening) {
-    try {
-      setState(() => _isListening = true);
-      
-      _recordingPath = await _startRecording();
-      print('Recording started at: $_recordingPath');
+    if (!_isListening) {
+      try {
+        setState(() => _isListening = true);
+        
+        _recordingPath = await _startRecording();
+        print('Recording started at: $_recordingPath');
 
-      final config = RecognitionConfig(
-        encoding: AudioEncoding.LINEAR16,
-        model: RecognitionModel.basic,
-        enableAutomaticPunctuation: true,
-        sampleRateHertz: 16000,
-        languageCode: 'ko-KR',
-      );
+        final config = RecognitionConfig(
+          encoding: AudioEncoding.LINEAR16,
+          model: RecognitionModel.basic,
+          enableAutomaticPunctuation: true,
+          sampleRateHertz: 16000,
+          languageCode: 'ko-KR',
+        );
 
-      final audioStream = await _getAudioStream();
+        final audioStream = await _getAudioStream();
 
-      final streamingConfig = StreamingRecognitionConfig(
-        config: config,
-        interimResults: true,
-      );
+        final streamingConfig = StreamingRecognitionConfig(
+          config: config,
+          interimResults: true,
+        );
 
-      final responseStream = speechToText.streamingRecognize(
-        streamingConfig,
-        audioStream,
-      );
+        print('Starting speech recognition...');
+        final responseStream = speechToText.streamingRecognize(
+          streamingConfig,
+          audioStream,
+        );
 
-      responseStream.listen((data) {
-        for (var result in data.results) {
-          setState(() {
-            if (result.alternatives.isNotEmpty) {
-              String transcript = result.alternatives.first.transcript;
-              bool isFinal = result.isFinal;
-              print('Recognized text (${isFinal ? 'final' : 'interim'}): $transcript');
-              _text = transcript;
-            } else {
-              print('No alternatives found in the result');
-            }
-          });
-        }
-      }, onDone: () {
-        print('Speech recognition completed');
+        responseStream.listen((data) {
+          print('Received speech recognition data: $data');
+          for (var result in data.results) {
+            setState(() {
+              if (result.alternatives.isNotEmpty) {
+                String transcript = result.alternatives.first.transcript;
+                bool isFinal = result.isFinal;
+                print('Recognized text (${isFinal ? 'final' : 'interim'}): $transcript');
+                _text = transcript;
+              } else {
+                print('No alternatives found in the result');
+              }
+            });
+          }
+        }, onDone: () {
+          print('Speech recognition completed');
+          setState(() => _isListening = false);
+          _stopRecording();
+          _saveTranscript();
+        }, onError: (error) {
+          print('Error during speech recognition: $error');
+          setState(() => _isListening = false);
+          _stopRecording();
+        });
+      } catch (e) {
+        print('Error in _listen method: $e');
         setState(() => _isListening = false);
         _stopRecording();
-        _saveTranscript();
-      }, onError: (error) {
-        print('Error during speech recognition: $error');
-        setState(() => _isListening = false);
-        _stopRecording();
-      });
-    } catch (e) {
-      print('Error in _listen method: $e');
+      }
+    } else {
       setState(() => _isListening = false);
       _stopRecording();
     }
-  } else {
-    setState(() => _isListening = false);
-    _stopRecording();
   }
-}
 
   Future<Stream<List<int>>> _getAudioStream() async {
     if (_recordingPath == null) {
       throw Exception('Recording path is null');
     }
-    return File(_recordingPath!).openRead();
+    final file = File(_recordingPath!);
+    if (!await file.exists()) {
+      throw Exception('Audio file does not exist: $_recordingPath');
+    }
+    print('Audio file size: ${await file.length()} bytes');
+    return file.openRead();
   }
 
   Future<String> _startRecording() async {
@@ -179,7 +186,7 @@ class _STTState extends State<STT> {
           'date': widget.selectedDate,
         }, SetOptions(merge: true));
 
-        print('Transcript saved successfully');
+        print('Transcript saved successfully: $_text');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('일기가 저장되었습니다.')),
         );
