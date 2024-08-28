@@ -110,7 +110,7 @@ class Profile extends StatelessWidget {
               ),
               SizedBox(width: 10),
               Text(
-                '로그아웃',
+                text,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
