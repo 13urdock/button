@@ -3,7 +3,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '/src/color.dart';
 import 'diary_entry.dart';
 import 'stt.dart';
@@ -33,8 +32,8 @@ class _WritingDiaryState extends State<WritingDiary> {
             onPressed: () async {
               final result = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => STT()),
-              );
+                MaterialPageRoute(builder: (context) => STT(selectedDate: widget.selectedDate)),
+    );
               if (result != null) {
                 setState(() {
                   _diaryController.text = result;
