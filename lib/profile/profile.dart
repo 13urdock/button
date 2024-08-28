@@ -96,12 +96,7 @@ class Profile extends StatelessWidget {
   Widget _buildButton(
       BuildContext context, IconData icon, String text, Widget page) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        );
-      },
+      onTap: () => signOut(context),
       child: Ink(
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 10),
@@ -115,7 +110,7 @@ class Profile extends StatelessWidget {
               ),
               SizedBox(width: 10),
               Text(
-                text,
+                '로그아웃',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -142,12 +137,22 @@ class CollectedButtonsPage extends StatelessWidget {
 class LogoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // 페이지가 로드되자마자 로그아웃 실행
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      signOut(context);
+    });
+
+    // 로그아웃 중임을 나타내는 간단한 화면 표시
     return Scaffold(
-      appBar: AppBar(title: Text('로그아웃')),
+      appBar: AppBar(title: Text('')),
       body: Center(
-        child: ElevatedButton(
-          child: Text('로그아웃'),
-          onPressed: () => signOut(context),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 20),
+            Text('로그아웃 중...'),
+          ],
         ),
       ),
     );
