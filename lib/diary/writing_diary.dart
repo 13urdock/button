@@ -1,3 +1,5 @@
+//빈일기, 일기 작성 -> 저장
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -16,24 +18,35 @@ class WritingDiary extends StatefulWidget {
 }
 
 class _WritingDiaryState extends State<WritingDiary> {
-  final TextEditingController _diaryController = TextEditingController();
+  TextEditingController _diaryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${widget.selectedDate.year}년 ${widget.selectedDate.month}월 ${widget.selectedDate.day}일',
-        ),
+            '${widget.selectedDate.year}년 ${widget.selectedDate.month}월 ${widget.selectedDate.day}일'),
         backgroundColor: AppColors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.mic, color: Colors.black),
-            onPressed: _openSTT,
+            icon: Icon(Icons.mic, color: Colors.black),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => STT()),
+              );
+              if (result != null) {
+                setState(() {
+                  _diaryController.text = result;
+                });
+              }
+            },
           ),
           TextButton(
-            onPressed: () => _saveDiary(context),
-            child: const Text('저장', style: TextStyle(color: Colors.black)),
+            onPressed: () {
+              _saveDiary(context);
+            },
+            child: Text('저장', style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
@@ -44,14 +57,16 @@ class _WritingDiaryState extends State<WritingDiary> {
             child: Container(
               color: Colors.white,
               child: Center(
-                child: Image.asset('assets/empty.png'),
+                child: Image.asset(
+                  'assets/empty.png',
+                ),
               ),
             ),
           ),
           Expanded(
             flex: 3,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.danchuYellow,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -61,9 +76,9 @@ class _WritingDiaryState extends State<WritingDiary> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Expanded(
-                    child: _buildContentBox(),
+                    child: _buildContentBox(context),
                   ),
                 ],
               ),
@@ -74,12 +89,13 @@ class _WritingDiaryState extends State<WritingDiary> {
     );
   }
 
-  Widget _buildContentBox() {
+  Widget _buildContentBox(BuildContext context) {
+    //일기 작성
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
+      margin: EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -90,27 +106,15 @@ class _WritingDiaryState extends State<WritingDiary> {
         expands: true,
         decoration: InputDecoration(
           hintText: '내용을 입력하세요',
-          hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+          hintStyle: TextStyle(fontSize: 14, color: Colors.grey),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding: EdgeInsets.all(16),
         ),
       ),
     );
-  }
-
-  Future<void> _openSTT() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => STT(selectedDate: widget.selectedDate)),
-    );
-    if (result != null) {
-      setState(() {
-        _diaryController.text = result;
-      });
-    }
   }
 
   void _saveDiary(BuildContext context) {
@@ -124,21 +128,19 @@ class _WritingDiaryState extends State<WritingDiary> {
         'danchu': "미정",
       }).then((_) {
         Navigator.pop(
-          context,
-          DiaryEntry(
-            content: _diaryController.text,
-            date: widget.selectedDate,
-            danchu: '미정',
-          ),
-        );
+            context,
+            DiaryEntry(
+                content: _diaryController.text,
+                date: widget.selectedDate,
+                danchu: '미정'));
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('일기 저장 중 오류가 발생했습니다.')),
+          SnackBar(content: Text('일기 저장 중 오류가 발생했습니다.')),
         );
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('일기 내용을 입력해주세요.')),
+        SnackBar(content: Text('일기 내용을 입력해주세요.')),
       );
     }
   }
