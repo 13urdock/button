@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../src/color.dart';
+import 'find_id_password.dart';
 
 class AccountLogIn extends StatefulWidget {
   const AccountLogIn({super.key});
@@ -155,6 +156,37 @@ class _AccountLogInState extends State<AccountLogIn> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: EdgeInsets.only(right: 32), // 오른쪽에 16픽셀의 여백을 줍니다
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FindIdPassword()),
+                          );
+                        },
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(
+                          '계정 찾기',
+                          style: TextStyle(
+                            color: Colors.black, // 텍스트 색상을 검은색으로 변경
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

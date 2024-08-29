@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../src/color.dart';
+import 'dart:math';
+import 'dart:async';
 
 class join_membership extends StatefulWidget {
   const join_membership({Key? key}) : super(key: key);
@@ -13,13 +15,14 @@ class join_membership extends StatefulWidget {
 class _Join_membership extends State<join_membership> {
   final _formKey = GlobalKey<FormState>();
   final _nicknameController = TextEditingController();
-  final _idController = TextEditingController(); // 새로 추가된 ID 컨트롤러
+  final _idController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   String _statusMessage = '';
+  bool _isEmailVerified = false;
 
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
@@ -45,46 +48,86 @@ class _Join_membership extends State<join_membership> {
     );
   }
 
-  Future<void> _signUp() async {
-    if (_formKey.currentState!.validate()) {
+  Future<void> _sendVerificationEmail() async {
+    if (_emailController.text.isNotEmpty) {
       try {
-        final UserCredential userCredential =
+        // 임시 사용자 생성
+        UserCredential userCredential =
             await _auth.createUserWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
         );
 
-        await _firestore.collection('users').doc(userCredential.user!.uid).set({
-          'email': _emailController.text,
-          'nickname': _nicknameController.text,
-          'id': _idController.text,
-          'password': _passwordController.text,
+        // 이메일 인증 보내기
+        await userCredential.user!.sendEmailVerification();
+
+        setState(() {
+          _statusMessage = '인증 이메일이 전송되었습니다. 이메일을 확인해주세요.';
         });
 
-        if (userCredential.user != null) {
-          if (!userCredential.user!.emailVerified) {
-            await userCredential.user!.sendEmailVerification();
+        // 이메일 인증 상태 확인
+        _checkEmailVerification(userCredential.user!);
+      } catch (e) {
+        setState(() {
+          _statusMessage = '이메일 전송 중 오류가 발생했습니다: $e';
+        });
+      }
+    } else {
+      setState(() {
+        _statusMessage = '유효한 이메일 주소를 입력해주세요.';
+      });
+    }
+  }
+
+  Future<void> _checkEmailVerification(User user) async {
+    // 주기적으로 이메일 인증 상태 확인
+    Timer.periodic(Duration(seconds: 5), (timer) async {
+      await user.reload();
+      user = _auth.currentUser!;
+      if (user.emailVerified) {
+        setState(() {
+          _isEmailVerified = true;
+          _statusMessage = '이메일이 인증되었습니다.';
+        });
+        timer.cancel();
+      }
+    });
+  }
+
+  Future<void> _signUp() async {
+    if (_formKey.currentState!.validate() && _isEmailVerified) {
+      try {
+        // 이미 인증된 사용자가 있으므로, 추가 정보만 업데이트
+        User? user = _auth.currentUser;
+        if (user != null) {
+          await _firestore.collection('users').doc(user.uid).set({
+            'email': _emailController.text,
+            'nickname': _nicknameController.text,
+            'id': _idController.text,
+          });
+
+          // 비밀번호 업데이트 (필요한 경우)
+          if (_passwordController.text.isNotEmpty) {
+            await user.updatePassword(_passwordController.text);
           }
+
+          setState(() {
+            _statusMessage = '회원가입이 완료되었습니다.';
+          });
 
           // 잠시 대기 후 이전 화면으로 돌아가기
           await Future.delayed(Duration(seconds: 2));
-          Navigator.of(context).pop(); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.
+          Navigator.of(context).pop();
         }
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          if (e.code == 'weak-password') {
-            _statusMessage = '비밀번호가 너무 약합니다.';
-          } else if (e.code == 'email-already-in-use') {
-            _statusMessage = '이미 사용 중인 이메일입니다.';
-          } else {
-            _statusMessage = e.message ?? '회원가입 실패';
-          }
-        });
       } catch (e) {
         setState(() {
-          _statusMessage = '회원가입 중 오류가 발생했습니다.';
+          _statusMessage = '회원가입 중 오류가 발생했습니다: $e';
         });
       }
+    } else if (!_isEmailVerified) {
+      setState(() {
+        _statusMessage = '이메일 인증을 완료해주세요.';
+      });
     }
   }
 
@@ -121,22 +164,6 @@ class _Join_membership extends State<join_membership> {
                     if (value == null || value.isEmpty) {
                       return '아이디를 입력해주세요.';
                     }
-                    // 여기에 아이디 유효성 검사 로직을 추가할 수 있습니다.
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: _inputDecoration("이메일"),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '이메일을 입력해주세요.';
-                    }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                        .hasMatch(value)) {
-                      return '올바른 이메일 형식이 아닙니다.';
-                    }
                     return null;
                   },
                 ),
@@ -167,6 +194,37 @@ class _Join_membership extends State<join_membership> {
                     return null;
                   },
                 ),
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _emailController,
+                        decoration: _inputDecoration("이메일"),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '이메일을 입력해주세요.';
+                          }
+                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                              .hasMatch(value)) {
+                            return '올바른 이메일 형식이 아닙니다.';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed:
+                          _isEmailVerified ? null : _sendVerificationEmail,
+                      child: Text("인증하기"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.danchuYellow,
+                        foregroundColor: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 20),
                 Text(_statusMessage, style: TextStyle(color: Colors.red)),
                 SizedBox(height: 20),
@@ -182,7 +240,7 @@ class _Join_membership extends State<join_membership> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20), // 버튼 아래 여백 추가
+                SizedBox(height: 20),
               ],
             ),
           ),
