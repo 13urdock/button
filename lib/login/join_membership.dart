@@ -3,17 +3,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../src/color.dart';
 
-class AccountLogIn extends StatefulWidget {
-  const AccountLogIn({super.key});
+class join_membership extends StatefulWidget {
+  const join_membership({Key? key}) : super(key: key);
 
   @override
-  _AccountLogInState createState() => _AccountLogInState();
+  _Join_membership createState() => _Join_membership();
 }
 
-class _AccountLogInState extends State<AccountLogIn> {
+class _Join_membership extends State<join_membership> {
   final _formKey = GlobalKey<FormState>();
-  final _idController = TextEditingController();
+  final _nicknameController = TextEditingController();
+  final _idController = TextEditingController(); // 새로 추가된 ID 컨트롤러
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   String _statusMessage = '';
@@ -42,64 +45,44 @@ class _AccountLogInState extends State<AccountLogIn> {
     );
   }
 
-  Future<void> _signIn() async {
+  Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _statusMessage = '로그인 중...');
       try {
-        // 1. Firestore에서 입력된 ID에 해당하는 사용자 문서 찾기
-        final querySnapshot = await _firestore
-            .collection('users')
-            .where('id', isEqualTo: _idController.text)
-            .limit(1)
-            .get();
-
-        if (querySnapshot.docs.isEmpty) {
-          setState(() => _statusMessage = '해당 ID로 등록된 사용자가 없습니다.');
-          return;
-        }
-
-        final userDoc = querySnapshot.docs.first;
-        final userEmail = userDoc.data()['email'] as String;
-
-        // 2. 찾은 이메일로 Firebase Authentication을 사용하여 로그인
         final UserCredential userCredential =
-            await _auth.signInWithEmailAndPassword(
-          email: userEmail,
+            await _auth.createUserWithEmailAndPassword(
+          email: _emailController.text,
           password: _passwordController.text,
         );
 
-        // 로그인 성공 처리
-        if (userCredential.user != null) {
-          print('로그인 성공: ${userCredential.user!.uid}');
+        await _firestore.collection('users').doc(userCredential.user!.uid).set({
+          'email': _emailController.text,
+          'nickname': _nicknameController.text,
+          'id': _idController.text,
+          'password': _passwordController.text,
+        });
 
-          // 상태 메시지 업데이트
-          setState(() => _statusMessage = '로그인 성공!');
+        if (userCredential.user != null) {
+          if (!userCredential.user!.emailVerified) {
+            await userCredential.user!.sendEmailVerification();
+          }
 
           // 잠시 대기 후 이전 화면으로 돌아가기
           await Future.delayed(Duration(seconds: 2));
-
-          if (mounted) {
-            Navigator.of(context).pop(); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.
-            print('이전 화면으로 돌아가기 성공');
-          } else {
-            print('위젯이 더 이상 트리에 없습니다.');
-          }
+          Navigator.of(context).pop(); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.
         }
       } on FirebaseAuthException catch (e) {
-        print('FirebaseAuthException: ${e.code}');
         setState(() {
-          if (e.code == 'user-not-found') {
-            _statusMessage = '해당 사용자를 찾을 수 없습니다.';
-          } else if (e.code == 'wrong-password') {
-            _statusMessage = '잘못된 비밀번호입니다.';
+          if (e.code == 'weak-password') {
+            _statusMessage = '비밀번호가 너무 약합니다.';
+          } else if (e.code == 'email-already-in-use') {
+            _statusMessage = '이미 사용 중인 이메일입니다.';
           } else {
-            _statusMessage = '로그인 실패: ${e.message}';
+            _statusMessage = e.message ?? '회원가입 실패';
           }
         });
       } catch (e) {
-        print('예상치 못한 오류: $e');
         setState(() {
-          _statusMessage = '로그인 중 오류가 발생했습니다.';
+          _statusMessage = '회원가입 중 오류가 발생했습니다.';
         });
       }
     }
@@ -110,7 +93,7 @@ class _AccountLogInState extends State<AccountLogIn> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('로그인'),
+        title: Text('회원가입'),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -121,11 +104,38 @@ class _AccountLogInState extends State<AccountLogIn> {
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  controller: _nicknameController,
+                  decoration: _inputDecoration("닉네임"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '닉네임을 입력해주세요.';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                TextFormField(
                   controller: _idController,
                   decoration: _inputDecoration("아이디"),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return '아이디를 입력해주세요.';
+                    }
+                    // 여기에 아이디 유효성 검사 로직을 추가할 수 있습니다.
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: _inputDecoration("이메일"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '이메일을 입력해주세요.';
+                    }
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
+                      return '올바른 이메일 형식이 아닙니다.';
                     }
                     return null;
                   },
@@ -139,6 +149,21 @@ class _AccountLogInState extends State<AccountLogIn> {
                     if (value == null || value.isEmpty) {
                       return '비밀번호를 입력해주세요.';
                     }
+                    if (value.length < 6) {
+                      return '비밀번호는 6자 이상이어야 합니다.';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  decoration: _inputDecoration("비밀번호 확인"),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value != _passwordController.text) {
+                      return '비밀번호가 일치하지 않습니다.';
+                    }
                     return null;
                   },
                 ),
@@ -146,8 +171,8 @@ class _AccountLogInState extends State<AccountLogIn> {
                 Text(_statusMessage, style: TextStyle(color: Colors.red)),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _signIn,
-                  child: Text("로그인하기"),
+                  onPressed: _signUp,
+                  child: Text("가입하기"),
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 50),
                     backgroundColor: AppColors.danchuYellow,
@@ -157,6 +182,7 @@ class _AccountLogInState extends State<AccountLogIn> {
                     ),
                   ),
                 ),
+                SizedBox(height: 20), // 버튼 아래 여백 추가
               ],
             ),
           ),
