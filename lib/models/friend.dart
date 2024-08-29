@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class Friend {
-  final String? profilePicPath;
-  final String name;
-  // 스케줄은 모델을 만들어서 해야할지, Todo List로 만들어서 올릴지 고민중이에요
+  final String friendId;
+  final String userId;
+  final String status; // accepted, pending, denied
 
   Friend({
-    this.profilePicPath,
-    required this.name,
+    required this.friendId,
+    required this.userId,
+    required this.status,
   });
 }
