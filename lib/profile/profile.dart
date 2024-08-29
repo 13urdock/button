@@ -151,7 +151,7 @@ class LogoutPage extends StatelessWidget {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 20),
-            Text('로그아웃 중...'),
+            Text('로그아웃 중... 잠시만 기다려주세요'),
           ],
         ),
       ),
