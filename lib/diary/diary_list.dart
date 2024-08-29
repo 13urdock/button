@@ -7,28 +7,20 @@ import '/diary/viewing_diary.dart';
 import '/diary/danchu_list.dart';
 
 class DiaryList extends StatelessWidget {
-  final DateTime selectedDate;
-
-  const DiaryList({Key? key, required this.selectedDate}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('danchu')
           .where('date',
-              isGreaterThanOrEqualTo:
-                  DateTime(selectedDate.year, selectedDate.month, 1))
-          .where('date',
-              isLessThan:
-                  DateTime(selectedDate.year, selectedDate.month + 1, 1))
+              isGreaterThanOrEqualTo: DateTime(now.year, now.month, 1))
+          .where('date', isLessThan: DateTime(now.year, now.month + 1, 1))
           .orderBy('date', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
-              child: Text(
-                  '${selectedDate.year}년 ${selectedDate.month}월에 작성된 일기가 없습니다.'));
+          return Center(child: Text('이번 달에 작성된 일기가 없습니다.'));
         }
 
         List<DiaryEntry> diaries = snapshot.data!.docs.map((doc) {

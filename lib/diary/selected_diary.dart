@@ -39,8 +39,7 @@ class SelectedDiary extends StatelessWidget {
         } else {
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: !selectedDay.isAfter(DateTime(DateTime.now().year,
-                    DateTime.now().month, DateTime.now().day))
+            child: selectedDay.isBefore(DateTime.now().add(Duration(days: 1)))
                 ? _buildEmptyDiaryButton(context)
                 : SizedBox(), // 미래 날짜일 경우 빈 화면 표시
           );
