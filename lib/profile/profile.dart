@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '/login/logout.dart';
-import 'src/color.dart';
+import '../src/color.dart';
 import 'profile_contact.dart';
 import 'profile_setting_account.dart';
 import 'profile_setting.dart';
@@ -70,12 +70,16 @@ class Profile extends StatelessWidget {
                       SizedBox(height: 20), // 상단 여백 추가
                       _buildButton(
                           context, Icons.settings, '설정', ProfileSetting()), //완료
-                      SizedBox(height: 25), // 버튼 사이 간격
-                      _buildButton(
-                          context,
-                          Icons.settings_accessibility_outlined,
-                          '모은 단추 확인하기',
-                          ProfileSettingAccount()), //현 계정 세팅 페이지
+                      
+                      // 나중에 버전 업데이트 때 추가 구현 및 수정 필요함
+                      
+                      // SizedBox(height: 25), // 버튼 사이 간격
+                      // _buildButton(
+                      //     context,
+                      //     Icons.settings_accessibility_outlined,
+                      //     '모은 단추 확인하기',
+                      //     ProfileSettingAccount()), //현 계정 세팅 페이지
+
                       SizedBox(height: 25), // 버튼 사이 간격
                       _buildButton(context, Icons.contact_support, '개발자에게 문의하기',
                           ProfileContact()),
@@ -96,7 +100,8 @@ class Profile extends StatelessWidget {
   Widget _buildButton(
       BuildContext context, IconData icon, String text, Widget page) {
     return InkWell(
-      onTap: () => signOut(context),
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => page)),
       child: Ink(
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 10),
@@ -144,7 +149,6 @@ class LogoutPage extends StatelessWidget {
 
     // 로그아웃 중임을 나타내는 간단한 화면 표시
     return Scaffold(
-      appBar: AppBar(title: Text('')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

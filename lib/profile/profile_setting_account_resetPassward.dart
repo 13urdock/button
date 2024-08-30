@@ -65,7 +65,7 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                image: NetworkImage("https://via.placeholder.com/94x94"),
+                                image: AssetImage("asset/danchu_3Dlogo.png"),
                                 fit: BoxFit.cover,
                               ),
                             ),
