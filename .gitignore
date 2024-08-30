@@ -31,6 +31,9 @@ migrate_working_dir/
 .pub/
 /build/
 
+# 구글 클라우드 서비스 계정 크레덴셜
+assets/psyched-era-430113-v1-7b2f431ade12.json
+
 # Symbolication related
 app.*.symbols
 

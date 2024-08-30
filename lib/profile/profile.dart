@@ -145,7 +145,6 @@ class LogoutPage extends StatelessWidget {
 
     // 로그아웃 중임을 나타내는 간단한 화면 표시
     return Scaffold(
-      appBar: AppBar(title: Text('')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

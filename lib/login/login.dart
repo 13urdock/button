@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../src/color.dart';
 import 'account_login.dart';
+import 'join_membership.dart';
 
 class LogInPage extends StatelessWidget {
   const LogInPage({Key? key}) : super(key: key);
@@ -63,6 +64,30 @@ class LogInPage extends StatelessWidget {
                 },
                 child: Text('로그인', style: textStyle),
                 style: buttonStyle,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: EdgeInsets.only(right: 32), // 오른쪽에 16픽셀의 여백을 줍니다
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => join_membership()),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text('회원가입', style: textStyle),
+                  ),
+                ],
               ),
             ),
           ],

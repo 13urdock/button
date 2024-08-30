@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '/diary/diary_entry.dart';
 import '/src/color.dart';
 import 'edit_diary.dart';
@@ -40,17 +39,21 @@ class ViewingDiary extends StatelessWidget {
           ],
         ),
         body: StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('danchu')
-                .doc(formattedDate)
-                .snapshots(),
-            builder: (context, snapshot) {
-              var data = snapshot.data!.data() as Map<String, dynamic>;
-              DiaryEntry diary = DiaryEntry(
-                content: data['content'],
-                date: selectedDay,
-                danchu: data['danchu'],
-              );
+          stream: FirebaseFirestore.instance
+              .collection('danchu')
+              .doc(formattedDate)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            var data = snapshot.data!.data() as Map<String, dynamic>;
+            DiaryEntry diary = DiaryEntry(
+              content: data['content'] ?? '',
+              date: selectedDay,
+              danchu: data['danchu'] ?? '미정',
+            );
+            String aiSummary = data['aiSummary'] ?? '아직 AI 요약이 없습니다.';
               return Column(
                 children: [
                   Expanded(
@@ -62,40 +65,42 @@ class ViewingDiary extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    flex: 3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.danchuYellow,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildSectionTitle('AI 요약'),
-                          _buildContentBox(
-                            context,
-                            height: 110,
-                            content: '아직 AI 요약이 없습니다.',
-                          ),
-                          SizedBox(height: 16),
-                          _buildSectionTitle('일기'),
-                          Expanded(
-                            child: _buildContentBox(
-                              context,
-                              content: diary.content,
-                              scrollable: true,
-                            ),
-                          ),
-                        ],
-                      ),
+                flex: 3,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.danchuYellow,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
                     ),
                   ),
-                ],
-              );
-            }));
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildSectionTitle('AI 요약'),
+                      _buildContentBox(
+                        context,
+                        height: 110,
+                        content: aiSummary,
+                      ),
+                      SizedBox(height: 16),
+                      _buildSectionTitle('일기'),
+                      Expanded(
+                        child: _buildContentBox(
+                          context,
+                          content: diary.content,
+                          scrollable: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildSectionTitle(String title) {
