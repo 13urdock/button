@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'profile_setting_notificationSetting.dart';
 import 'profile_setting_account.dart';
 import 'profile_setting_friend.dart';
-import 'src/color.dart';
+import '../src/color.dart';
 import 'profile_theme.dart';
 
 class ProfileSetting extends StatelessWidget {

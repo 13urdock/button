@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'src/color.dart';
+import '../src/color.dart';
 
 class ProfileSettingFriend extends StatefulWidget {
   final Widget? bottomWidget;

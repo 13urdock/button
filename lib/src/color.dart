@@ -7,4 +7,12 @@ class AppColors {
   static const Color saturdayblue = Color(0xFF2043FF);
   static const Color nomalText = Colors.black;
   static const Color white = Colors.white;
+
+  static Color _mainColor = danchuYellow;
+
+  static Color get mainColor => _mainColor;
+
+  static void setMainColor(Color color) {
+    _mainColor = color;
+  }
 }
