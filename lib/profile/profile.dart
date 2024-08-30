@@ -96,7 +96,8 @@ class Profile extends StatelessWidget {
   Widget _buildButton(
       BuildContext context, IconData icon, String text, Widget page) {
     return InkWell(
-      onTap: () => signOut(context),
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => page)),
       child: Ink(
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 10),
@@ -144,7 +145,6 @@ class LogoutPage extends StatelessWidget {
 
     // 로그아웃 중임을 나타내는 간단한 화면 표시
     return Scaffold(
-      appBar: AppBar(title: Text('')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
