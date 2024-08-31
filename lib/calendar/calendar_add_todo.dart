@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:danchu/icon_selector_popup.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/todo_item.dart';
 import '../models/custom_circle_icon.dart';
@@ -24,6 +24,7 @@ class _AddTodoState extends State<AddTodo> {
   bool isRoutine = false;
 
   final FirebaseFirestore _todos = FirebaseFirestore.instance; // firebase realtime database에 저장할 데이터 리스트
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -237,32 +238,42 @@ class _AddTodoState extends State<AddTodo> {
   }
 
   void _saveTodoItem() {
-   if (_titleController.text.isNotEmpty && _descriptionController.text.isNotEmpty) {
-  final newTodo = TodoItem(
-    date: _selectedDate,
-    title: _titleController.text,
-    description: _descriptionController.text,
-    beginTime: isAllDay ? null : DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _beginTime.hour, _beginTime.minute),
-    endTime: isAllDay ? null : DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _endTime.hour, _endTime.minute),
-    isRoutine: isRoutine,
-    isAllDay: isAllDay,
-    iconColor: _selectedColor,
-  );
+    final User? user = _auth.currentUser;
 
-  _todos.collection('todos').add(newTodo.toJson()).then((docRef) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('할 일이 성공적으로 저장되었습니다.')),
+    if(user != null){
+      if (_titleController.text.isNotEmpty && _descriptionController.text.isNotEmpty) {
+        final newTodo = TodoItem(
+          date: _selectedDate,
+          title: _titleController.text,
+          description: _descriptionController.text,
+          beginTime: isAllDay ? null : DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _beginTime.hour, _beginTime.minute),
+          endTime: isAllDay ? null : DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _endTime.hour, _endTime.minute),
+          isRoutine: isRoutine,
+          isAllDay: isAllDay,
+          iconColor: _selectedColor,
+        );
+
+        _todos.collection('users').doc(user.uid).collection('todos').add(newTodo.toJson()).then((docRef) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('할 일이 성공적으로 저장되었습니다.')),
+          );
+          Navigator.of(context).pop();
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('저장 중 오류가 발생했습니다: $error')),
+          );
+        });
+      } 
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('제목과 설명을 모두 입력해주세요.')),
+        );
+      }
+    }
+    else{
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('로그인이 필요합니다.')),
     );
-    Navigator.of(context).pop();
-  }).catchError((error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('저장 중 오류가 발생했습니다: $error')),
-    );
-  });
-} else {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('제목과 설명을 모두 입력해주세요.')),
-  );
-}
+    }
   }
 }

@@ -1,55 +1,70 @@
-import 'package:danchu/models/custom_circle_icon.dart';
-import 'package:danchu/models/todo_item.dart';
 import 'package:flutter/material.dart';
-
-import '../src/color.dart';
 import '../models/todo_item.dart';
 import '../models/custom_circle_icon.dart';
+import '../src/color.dart';
 
-// 일정 리스트 띄우는 화면
-
-class TodoList extends StatelessWidget {
+class TodoList extends StatefulWidget {
   final List<TodoItem> todoItems;
   final Function(TodoItem) onDelete;
 
   TodoList({required this.todoItems, required this.onDelete});
 
   @override
-  Widget build(BuildContext context) {
-    print("TodoList: 총 ${todoItems.length}개의 일정이 있습니다.");
+  _TodoListState createState() => _TodoListState();
+}
 
-    if (todoItems.isEmpty) {
+class _TodoListState extends State<TodoList> {
+  Set<String> selectedItems = {};
+
+  void toggleSelection(String userId) {
+    setState(() {
+      if (selectedItems.contains(userId)) {
+        selectedItems.remove(userId);
+      } else {
+        selectedItems.add(userId);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("TodoList: 총 ${widget.todoItems.length}개의 일정이 있습니다.");
+
+    if (widget.todoItems.isEmpty) {
       return Center(child: Text("일정이 없습니다."));
     }
 
     try {
-      return Expanded(
-        child: ListView.builder(
-          shrinkWrap: true,
-          physics: AlwaysScrollableScrollPhysics(),
-          itemCount: todoItems.length,
-          itemBuilder: (context, index) {
-            final todo = todoItems[index];
-            print("렌더링 중인 일정: ${todo.title}");
-            return Dismissible(
-              key: Key(todo.userId ?? ''),
-              onDismissed: (direction) {
-                onDelete(todo);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${todo.title} 삭제됨')),
-                );
-              },
-              background: Container(color: AppColors.deepYellow),
-              child: ListTile(
-                leading: CustomCircleIcon(
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: AlwaysScrollableScrollPhysics(),
+        itemCount: widget.todoItems.length,
+        itemBuilder: (context, index) {
+          final todo = widget.todoItems[index];
+          final isSelected = selectedItems.contains(todo.userId);
+          print("렌더링 중인 일정: ${todo.title}");
+          return Dismissible(
+            key: Key(todo.userId ?? ''),
+            onDismissed: (direction) {
+              widget.onDelete(todo);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${todo.title} 삭제됨')),
+              );
+            },
+            background: Container(color: AppColors.deepYellow),
+            child: ListTile(
+              leading: GestureDetector(
+                onTap: () => toggleSelection(todo.userId ?? ''),
+                child: CustomCircleIcon(
                   color: todo.iconColor,
+                  isSelected: isSelected,
                 ),
-                title: Text(todo.title),
-                subtitle: Text(todo.description),
               ),
-            );
-          },
-        ),
+              title: Text(todo.title),
+              subtitle: Text(todo.description),
+            ),
+          );
+        },
       );
     } catch (e) {
       print("TodoList 렌더링 중 오류 발생: $e");
