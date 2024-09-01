@@ -108,7 +108,7 @@ class _EditDiaryState extends State<EditDiary> {
           ),
           TextButton(
             onPressed: _saveDiary,
-            child: Text('저장장장장장장', style: TextStyle(color: Colors.black)),
+            child: Text('저장', style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
