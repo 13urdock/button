@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_speech/google_speech.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -75,7 +74,7 @@ class _STTState extends State<STT> {
     if (!_isListening) {
       try {
         setState(() => _isListening = true);
-        
+
         _recordingPath = await _startRecording();
         print('Recording started at: $_recordingPath');
 
@@ -107,7 +106,8 @@ class _STTState extends State<STT> {
               if (result.alternatives.isNotEmpty) {
                 String transcript = result.alternatives.first.transcript;
                 bool isFinal = result.isFinal;
-                print('Recognized text (${isFinal ? 'final' : 'interim'}): $transcript');
+                print(
+                    'Recognized text (${isFinal ? 'final' : 'interim'}): $transcript');
                 _text = transcript;
               } else {
                 print('No alternatives found in the result');
@@ -149,7 +149,8 @@ class _STTState extends State<STT> {
 
   Future<String> _startRecording() async {
     final directory = await getApplicationDocumentsDirectory();
-    final path = '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
+    final path =
+        '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
     try {
       await _recorder.startRecorder(
         toFile: path,
@@ -177,12 +178,15 @@ class _STTState extends State<STT> {
   Future<void> _saveTranscript() async {
     if (FirebaseAuth.instance.currentUser != null) {
       String dateString = DateFormat('yyyy-MM-dd').format(widget.selectedDate);
-      
+
       try {
-        await FirebaseFirestore.instance.collection('danchu').doc(dateString).set({
+        await FirebaseFirestore.instance
+            .collection('danchu')
+            .doc(dateString)
+            .set({
           'content': _text,
-          'aiSummary': _text,  // STT 결과를 AI 요약으로 사용
-          'danchu': '미정',  // 기본값 설정
+          'aiSummary': _text, // STT 결과를 AI 요약으로 사용
+          'danchu': '미정', // 기본값 설정
           'date': widget.selectedDate,
         }, SetOptions(merge: true));
 
@@ -225,7 +229,9 @@ class _STTState extends State<STT> {
           children: [
             GestureDetector(
               onTap: _listen,
-              child: Image.asset(_isListening ? 'assets/micbutton_recording.png' : 'assets/micbutton.png'),
+              child: Image.asset(_isListening
+                  ? 'assets/micbutton_recording.png'
+                  : 'assets/micbutton.png'),
             ),
             const SizedBox(height: 20),
             Text(

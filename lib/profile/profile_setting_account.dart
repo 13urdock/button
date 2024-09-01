@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile_deleteAccount.dart';
-import 'src/color.dart';
+import '../src/color.dart';
 import 'profile_setting_account_resetPassward.dart';
 // 각 페이지에 대한 import 문을 추가해야함. 할 예정
 // import 'profile_page.dart';

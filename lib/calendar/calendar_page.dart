@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '/src/color.dart';
+import '/src/appbar.dart';
 import 'calendar.dart';
 import 'calendar_draggable.dart';
 import 'show_calendar.dart';
@@ -17,8 +18,8 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   DateTime _selectedDay = DateTime.now();
 
-  void _onDaySelected(DateTime selectedDay){
-    setState((){
+  void _onDaySelected(DateTime selectedDay) {
+    setState(() {
       _selectedDay = selectedDay;
     });
   }
@@ -27,12 +28,8 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.danchuYellow,
-      appBar: AppBar(
-        title: Text('Danchu Calendar'),
-        backgroundColor: AppColors.danchuYellow,
-      ),
-      body: 
-      Column(
+      appBar: MainAppbar(pagename: 'Calendar'),
+      body: Column(
         children: [
           ShowFriendList(),
           Expanded(

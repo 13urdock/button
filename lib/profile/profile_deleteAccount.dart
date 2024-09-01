@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
-import 'src/color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../src/color.dart';
 import '/login/logout.dart';
 
-class ProfileDeleteAccount extends StatelessWidget {
-  //final FirebaseAuth _auth = FirebaseAuth.instance;
-  //final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Future<void> _deleteAccount(BuildContext context) async {
-  //   try {
-  //     User? user = _auth.currentUser;
-  //     if (user != null) {
-  //       await _firestore.collection('users').doc(user.uid).delete();
-  //       await user.delete();
-  //       Navigator.of(context).pushReplacementNamed('/login');
-  //     }
-  //   } catch (e) {
-  //     print('계정 삭제 중 오류 발생: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('계정 삭제 중 오류가 발생했습니다.')),
-  //     );
-  //   }
-  // }
+//
+class ProfileDeleteAccount extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await _firestore.collection('users').doc(user.uid).delete();
+        await user.delete();
+        Navigator.of(context).pushReplacementNamed('/login');
+      }
+    } catch (e) {
+      print('계정 삭제 중 오류 발생: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('계정 삭제 중 오류가 발생했습니다.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

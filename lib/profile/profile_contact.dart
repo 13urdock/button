@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'src/color.dart';
+import '../src/color.dart';
 
 class ProfileContact extends StatefulWidget {
   const ProfileContact({Key? key}) : super(key: key);
@@ -112,10 +112,10 @@ class _ProfileContactState extends State<ProfileContact> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.danchuYellow,
+      backgroundColor: AppColors.mainColor,
       appBar: AppBar(
         title: Text('문의화면'),
-        backgroundColor: AppColors.danchuYellow,
+        backgroundColor: AppColors.mainColor,
       ),
       body: SingleChildScrollView(
         child: Padding(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../src/color.dart';
 
 class ProfileTheme extends StatefulWidget {
   const ProfileTheme({Key? key}) : super(key: key);
@@ -12,15 +14,31 @@ class _ProfileThemeState extends State<ProfileTheme> {
   int selectedThemeIndex = -1;
   String message = '';
   List<Color> themeColors = [
-    Color(0xFFFFD66E), // Default yellow
-    Colors.blue,
-    Colors.green,
-    Colors.red,
-    Colors.purple,
-    Colors.orange,
-    Colors.teal,
-    Colors.pink,
+    AppColors.danchuYellow,
+    AppColors.deepYellow,
+    AppColors.saturdayblue,
+    AppColors.sundayred,
+    AppColors.white,
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
+
+  void _loadTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedThemeIndex = prefs.getInt('selectedThemeIndex') ?? -1;
+      _updateMainColor(selectedThemeIndex);
+    });
+  }
+
+  void _saveTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('selectedThemeIndex', selectedThemeIndex);
+  }
 
   void _showMessage() {
     setState(() {
@@ -33,6 +51,15 @@ class _ProfileThemeState extends State<ProfileTheme> {
         });
       }
     });
+  }
+
+  void _updateMainColor(int index) {
+    if (index == -1) {
+      AppColors.setMainColor(AppColors.danchuYellow);
+    } else {
+      AppColors.setMainColor(themeColors[index]);
+    }
+    setState(() {});
   }
 
   @override
@@ -49,7 +76,7 @@ class _ProfileThemeState extends State<ProfileTheme> {
                     Container(
                       width: double.infinity,
                       height: 64,
-                      color: selectedThemeIndex == -1 ? themeColors[0] : themeColors[selectedThemeIndex],
+                      color: AppColors.mainColor,
                     ),
                     Expanded(
                       child: Container(
@@ -77,7 +104,7 @@ class _ProfileThemeState extends State<ProfileTheme> {
                               isSwitch: true,
                             ),
                             ...List.generate(
-                              themeColors.length - 1,
+                              themeColors.length,
                               (index) => _buildSettingsItem(
                                 icon: Icons.palette,
                                 title: '테마 ${index + 1}',
@@ -101,7 +128,10 @@ class _ProfileThemeState extends State<ProfileTheme> {
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 50),
                               child: ElevatedButton(
-                                onPressed: _showMessage,
+                                onPressed: () {
+                                  _showMessage();
+                                  _saveTheme();
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.black,
                                   shape: RoundedRectangleBorder(
@@ -124,8 +154,6 @@ class _ProfileThemeState extends State<ProfileTheme> {
                         ),
                       ),
                     ),
-                    // Navigation bar widget would go here
-                    // Remove this comment and add the navigation bar widget
                   ],
                 ),
               ),
@@ -165,7 +193,7 @@ class _ProfileThemeState extends State<ProfileTheme> {
           if (isSwitch)
             Switch(
               value: isDarkMode,
-              activeColor: Color(0xFF000080), // 남색
+              activeColor: Color(0xFF000080),
               onChanged: (value) {
                 setState(() {
                   isDarkMode = value;
@@ -175,13 +203,15 @@ class _ProfileThemeState extends State<ProfileTheme> {
           else if (isCheckbox && checkboxIndex != null)
             Checkbox(
               value: selectedThemeIndex == checkboxIndex,
-              activeColor: themeColors[checkboxIndex + 1],
+              activeColor: themeColors[checkboxIndex],
               onChanged: (value) {
                 setState(() {
                   if (value == true) {
                     selectedThemeIndex = checkboxIndex;
+                    _updateMainColor(checkboxIndex);
                   } else {
                     selectedThemeIndex = -1;
+                    _updateMainColor(-1);
                   }
                 });
               },
