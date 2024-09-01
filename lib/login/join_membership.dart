@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../src/color.dart';
-import 'dart:math';
 import 'dart:async';
+import 'dart:math';
 
 class join_membership extends StatefulWidget {
   const join_membership({Key? key}) : super(key: key);
 
   @override
-  _Join_membership createState() => _Join_membership();
+  _JoinMembershipState createState() => _JoinMembershipState();
 }
 
-class _Join_membership extends State<join_membership> {
+class _JoinMembershipState extends State<join_membership> {
   final _formKey = GlobalKey<FormState>();
   final _nicknameController = TextEditingController();
   final _idController = TextEditingController();
@@ -23,6 +23,17 @@ class _Join_membership extends State<join_membership> {
   final _firestore = FirebaseFirestore.instance;
   String _statusMessage = '';
   bool _isEmailVerified = false;
+  User? _tempUser;
+
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    _idController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
@@ -49,76 +60,107 @@ class _Join_membership extends State<join_membership> {
   }
 
   Future<void> _sendVerificationEmail() async {
-    if (_emailController.text.isNotEmpty) {
+    if (_emailController.text.isEmpty) {
+      setState(() {
+        _statusMessage = '이메일을 입력해주세요.';
+      });
+      return;
+    }
+
+    try {
+      // 임의의 비밀번호 생성
+      String randomPassword = _generateRandomPassword();
+
+      // 임시 회원가입
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: randomPassword,
+      );
+
+      _tempUser = userCredential.user;
+
+      if (_tempUser != null) {
+        // 이메일 인증 메일 발송
+        await _tempUser!.sendEmailVerification();
+        setState(() {
+          _statusMessage = '인증 이메일이 전송되었습니다. 이메일을 확인해주세요.';
+        });
+
+        // 이메일 인증 상태 확인 시작
+        _startCheckingEmailVerification();
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _statusMessage = _getErrorMessage(e);
+      });
+    } catch (e) {
+      setState(() {
+        _statusMessage = '오류가 발생했습니다: $e';
+      });
+    }
+  }
+
+  void _startCheckingEmailVerification() {
+    Timer.periodic(Duration(seconds: 5), (timer) async {
+      if (_tempUser != null) {
+        await _tempUser!.reload();
+        _tempUser = _auth.currentUser;
+        if (_tempUser!.emailVerified) {
+          timer.cancel();
+          setState(() {
+            _isEmailVerified = true;
+            _statusMessage = '이메일 인증이 완료되었습니다.';
+          });
+          // 임시 계정 삭제
+          await _deleteTempAccount();
+        }
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  Future<void> _deleteTempAccount() async {
+    if (_tempUser != null) {
+      await _tempUser!.delete();
+      _tempUser = null;
+    }
+  }
+
+  Future<void> _signUp() async {
+    if (_formKey.currentState!.validate() && _isEmailVerified) {
       try {
-        // 임시 사용자 생성
+        // 실제 회원가입
         UserCredential userCredential =
             await _auth.createUserWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
         );
 
-        // 이메일 인증 보내기
-        await userCredential.user!.sendEmailVerification();
+        // 현재 시간을 가져옵니다
+        DateTime now = DateTime.now();
 
-        setState(() {
-          _statusMessage = '인증 이메일이 전송되었습니다. 이메일을 확인해주세요.';
+        // Firestore에 사용자 정보 저장
+        await _firestore.collection('users').doc(userCredential.user!.uid).set({
+          'email': _emailController.text,
+          'nickname': _nicknameController.text,
+          'id': _idController.text,
+          'passwordLastChanged': _passwordController.text, // 비밀번호 설정/변경 날짜
+          'createdAt': now.toIso8601String(), // 계정 생성 날짜
         });
 
-        // 이메일 인증 상태 확인
-        _checkEmailVerification(userCredential.user!);
-      } catch (e) {
         setState(() {
-          _statusMessage = '이메일 전송 중 오류가 발생했습니다: $e';
+          _statusMessage = '회원가입이 완료되었습니다.';
         });
-      }
-    } else {
-      setState(() {
-        _statusMessage = '유효한 이메일 주소를 입력해주세요.';
-      });
-    }
-  }
 
-  Future<void> _checkEmailVerification(User user) async {
-    // 주기적으로 이메일 인증 상태 확인
-    Timer.periodic(Duration(seconds: 5), (timer) async {
-      await user.reload();
-      user = _auth.currentUser!;
-      if (user.emailVerified) {
+        // 잠시 대기 후 이전 화면으로 돌아가기
+        await Future.delayed(Duration(seconds: 2));
+        Navigator.of(context).pop();
+      } on FirebaseAuthException catch (e) {
         setState(() {
-          _isEmailVerified = true;
-          _statusMessage = '이메일이 인증되었습니다.';
+          _statusMessage = _getErrorMessage(e);
         });
-        timer.cancel();
-      }
-    });
-  }
-
-  Future<void> _signUp() async {
-    if (_formKey.currentState!.validate() && _isEmailVerified) {
-      try {
-        // 이미 인증된 사용자가 있으므로, 추가 정보만 업데이트
-        User? user = _auth.currentUser;
-        if (user != null) {
-          await _firestore.collection('users').doc(user.uid).set({
-            'email': _emailController.text,
-            'nickname': _nicknameController.text,
-            'id': _idController.text,
-          });
-
-          // 비밀번호 업데이트 (필요한 경우)
-          if (_passwordController.text.isNotEmpty) {
-            await user.updatePassword(_passwordController.text);
-          }
-
-          setState(() {
-            _statusMessage = '회원가입이 완료되었습니다.';
-          });
-
-          // 잠시 대기 후 이전 화면으로 돌아가기
-          await Future.delayed(Duration(seconds: 2));
-          Navigator.of(context).pop();
-        }
       } catch (e) {
         setState(() {
           _statusMessage = '회원가입 중 오류가 발생했습니다: $e';
@@ -129,6 +171,29 @@ class _Join_membership extends State<join_membership> {
         _statusMessage = '이메일 인증을 완료해주세요.';
       });
     }
+  }
+
+  String _getErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        return '유효하지 않은 이메일 주소입니다.';
+      case 'email-already-in-use':
+        return '이미 사용 중인 이메일입니다.';
+      case 'operation-not-allowed':
+        return '이메일/비밀번호 계정이 비활성화되어 있습니다.';
+      case 'weak-password':
+        return '비밀번호가 너무 약합니다.';
+      default:
+        return '알 수 없는 오류가 발생했습니다: ${e.message}';
+    }
+  }
+
+  String _generateRandomPassword() {
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#\$%^&*()';
+    Random rnd = Random.secure();
+    return List.generate(20, (index) => chars[rnd.nextInt(chars.length)])
+        .join();
   }
 
   @override
@@ -215,8 +280,7 @@ class _Join_membership extends State<join_membership> {
                     ),
                     SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed:
-                          _isEmailVerified ? null : _sendVerificationEmail,
+                      onPressed: _sendVerificationEmail,
                       child: Text("인증하기"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.danchuYellow,
