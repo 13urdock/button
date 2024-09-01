@@ -29,6 +29,8 @@ class _ResetPasswordState extends State<ResetPassword> {
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
+      labelStyle: TextStyle(color: Colors.grey[600]), // 기본 라벨 색상
+      floatingLabelStyle: TextStyle(color: Colors.black), // 포커스 시 라벨 색상
       filled: true,
       fillColor: Colors.grey[200],
       border: OutlineInputBorder(

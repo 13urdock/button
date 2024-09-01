@@ -22,6 +22,32 @@ class _FindIdState extends State<find_Id> {
     super.dispose();
   }
 
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.grey[600]), // 기본 라벨 색상
+      floatingLabelStyle: TextStyle(color: Colors.black), // 포커스 시 라벨 색상
+      filled: true,
+      fillColor: Colors.grey[200],
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.danchuYellow, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.red, width: 2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.red, width: 2),
+      ),
+    );
+  }
+
   Future<void> _findId() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -95,17 +121,7 @@ class _FindIdState extends State<find_Id> {
                     height: 52,
                     child: TextFormField(
                       controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: '이메일',
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      ),
+                      decoration: _inputDecoration('이메일'),
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Pretendard',
