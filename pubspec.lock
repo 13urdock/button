@@ -253,34 +253,34 @@ packages:
     dependency: transitive
     description:
       name: dcli
-      sha256: c076448cee6fe563e1964ade9d4653d855e69d204547791fff0d0fe96c7bd75a
+      sha256: "34db376a896219c6ae8f8888d86a8c155b3d28be611337ffd810777c44e1dfc6"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.1-beta.4"
+    version: "6.0.5"
   dcli_common:
     dependency: transitive
     description:
       name: dcli_common
-      sha256: fa90efc6f5105de865db51fed4204b41e13f5113425d5704e46e56889f1cc46a
+      sha256: "88973e3e9f065aa27dc0b1dd054d8e2a79d31de2d420641bc661c462768e621f"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.3"
+    version: "6.0.3"
   dcli_core:
     dependency: transitive
     description:
       name: dcli_core
-      sha256: "4adec804e93b718d2b9efd7e4305c818219f65b8140833c7c12b10b198aff8c9"
+      sha256: af001fd27bf24b7cea15cb0579848e8312c62cd6ff63092375e19218f0e501e7
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.7"
+    version: "6.0.3"
   dcli_terminal:
     dependency: transitive
     description:
       name: dcli_terminal
-      sha256: fc289acb2e03f20c0d9b97ad5f19bcfa0d9dd8323028fee182fa7249b7687891
+      sha256: cb82b6927c413f46a00395421b094186776fa203ca29bf3f3a966fca2de76846
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.3"
+    version: "6.0.3"
   draggable_home:
     dependency: "direct main"
     description:
@@ -389,18 +389,18 @@ packages:
     dependency: transitive
     description:
       name: firebase_core_platform_interface
-      sha256: "3c3a1e92d6f4916c32deea79c4a7587aa0e9dbbe5889c7a16afcf005a485ee02"
+      sha256: f7d7180c7f99babd4b4c517754d41a09a4943a0f7a69b65c894ca5c68ba66315
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.0"
+    version: "5.2.1"
   firebase_core_web:
     dependency: transitive
     description:
       name: firebase_core_web
-      sha256: e8d1e22de72cb21cdcfc5eed7acddab3e99cd83f3b317f54f7a96c32f25fd11e
+      sha256: "362e52457ed2b7b180964769c1e04d1e0ea0259fdf7025fdfedd019d4ae2bd88"
       url: "https://pub.dev"
     source: hosted
-    version: "2.17.4"
+    version: "2.17.5"
   firebase_database:
     dependency: "direct main"
     description:
@@ -506,10 +506,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_iconpicker
-      sha256: e916c88b95ab24cca4e510e6398e28e913fee0d91b590a3c7db1a79027c8e96f
+      sha256: "56c98aada159facfa963de55d209100c571de8fb46fe7ba46f632527816a6352"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.6"
+    version: "3.5.1"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -628,10 +628,10 @@ packages:
     dependency: transitive
     description:
       name: google_sign_in_ios
-      sha256: a058c9880be456f21e2e8571c1126eaacd570bdc5b6c6d9d15aea4bdf22ca9fe
+      sha256: "4898410f55440049e1ba8f15411612d9f89299d89c61cd9baf7e02d56ff81ac7"
       url: "https://pub.dev"
     source: hosted
-    version: "5.7.6"
+    version: "5.7.7"
   google_sign_in_platform_interface:
     dependency: transitive
     description:
@@ -900,10 +900,10 @@ packages:
     dependency: transitive
     description:
       name: mime
-      sha256: "2e123074287cc9fd6c09de8336dae606d1ddb88d9ac47358826db698c176a1f2"
+      sha256: "801fd0b26f14a4a58ccb09d5892c3fbdeff209594300a542492cf13fba9d247a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.6"
   mockito:
     dependency: transitive
     description:
@@ -912,14 +912,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.4.4"
-  native_synchronization:
+  native_synchronization_temp:
     dependency: transitive
     description:
-      name: native_synchronization
-      sha256: ff200fe0a64d733ff7d4dde2005271c297db81007604c8cd21037959858133ab
+      name: native_synchronization_temp
+      sha256: "5f5f15add4eeb6c7dcf9172314232657c6b1d002a45cca0ba46d955497645d5a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0"
+    version: "0.6.0"
   nested:
     dependency: transitive
     description:
@@ -1148,10 +1148,10 @@ packages:
     dependency: transitive
     description:
       name: scope
-      sha256: "9930a3822bd33d1884a642d1cd79e6baf56d17288b3e0c54ae7c00cb559ef614"
+      sha256: "0b056e5b64ca16a2db9e1eb35cf7fd05a9e99a6b15140f82bfa651d081e4819b"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.1"
+    version: "5.1.0"
   scroll_date_picker:
     dependency: "direct main"
     description:
@@ -1168,6 +1168,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.2"
+  scrollview_observer:
+    dependency: transitive
+    description:
+      name: scrollview_observer
+      sha256: "926664b97c42a08a6b2e96d35fb25440be2659ac4b3ec0499b441068392c6eb7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.21.1"
   settings_yaml:
     dependency: transitive
     description:
@@ -1409,10 +1417,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "8cb58b45c47dcb42ab3651533626161d6b67a2921917d8d429791f76972b3480"
+      sha256: "68d1e89a91ed61ad9c370f9f8b6effed9ae5e0ede22a270bdfa6daf79fc2290a"
       url: "https://pub.dev"
     source: hosted
-    version: "5.3.0"
+    version: "5.5.4"
   xdg_directories:
     dependency: transitive
     description:
