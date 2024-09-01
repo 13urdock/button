@@ -30,7 +30,7 @@ class _WritingDiaryState extends State<WritingDiary> {
             '${widget.selectedDate.year}년 ${widget.selectedDate.month}월 ${widget.selectedDate.day}일'),
         backgroundColor: AppColors.white,
         actions: [
-          IconButton(
+          IconButton( // Speech to Text 아이콘
             icon: Icon(Icons.mic, color: Colors.black),
             onPressed: () async {
               final result = await Navigator.push(
@@ -46,7 +46,7 @@ class _WritingDiaryState extends State<WritingDiary> {
               }
             },
           ),
-          TextButton(
+          TextButton( // 저장 버튼
             onPressed: () {
               _saveDiary(context);
             },
@@ -56,7 +56,7 @@ class _WritingDiaryState extends State<WritingDiary> {
       ),
       body: Column(
         children: [
-          Expanded(
+          Expanded( // 일기 추가 아이콘
             flex: 1,
             child: Container(
               color: Colors.white,
@@ -67,7 +67,7 @@ class _WritingDiaryState extends State<WritingDiary> {
               ),
             ),
           ),
-          Expanded(
+          Expanded( // 일기 텍스트 박스
             flex: 3,
             child: Container(
               decoration: BoxDecoration(
