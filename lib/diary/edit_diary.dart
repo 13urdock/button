@@ -1,3 +1,4 @@
+//일기 수정페이지
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,7 +20,6 @@ class EditDiary extends StatefulWidget {
 class _EditDiaryState extends State<EditDiary> {
   TextEditingController _diaryController = TextEditingController();
   String _selectedDanchu = '미정';
-  bool _isAnalyzing = false;
 
   @override
   void initState() {
@@ -108,7 +108,7 @@ class _EditDiaryState extends State<EditDiary> {
           ),
           TextButton(
             onPressed: _saveDiary,
-            child: Text('저장장장장장장', style: TextStyle(color: Colors.black)),
+            child: Text('저장', style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
