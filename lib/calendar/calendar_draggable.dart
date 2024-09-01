@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'calendar.dart'; // 날짜와 연결하기 위해서 
 import 'calendar_add_todo.dart';
@@ -16,19 +17,83 @@ class CalendarDraggable extends StatefulWidget {
 }
 
 class _CalendarDraggableState extends State<CalendarDraggable> {
-  final List<TodoItem> todoItems = []; // 선택된 날의 일정을 담아놓는 일정 리스트. 나중에 데이터베이스와 연결하기
+  final DatabaseReference _database = FirebaseDatabase.instance.ref().child('todos');
+  List<TodoItem> _filteredTodoItems= []; // 선택된 날의 일정을 담아놓는 일정 리스트. 나중에 데이터베이스와 연결하기
 
-String getDateText(DateTime selectedDay){
-  final now = DateTime.now();
-  if (selectedDay.year == now.year &&
-      selectedDay.month == now.month &&
-      selectedDay.day == now.day) {
-    return 'TODAY';
-  } 
-  else {
-    return DateFormat('M.d').format(selectedDay);
+  @override
+  void initState() {
+    super.initState();
+    _loadFilteredTodoItems();
   }
-}
+
+  @override
+  void didUpdateWidget(CalendarDraggable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedDay != widget.selectedDay) {
+      _loadFilteredTodoItems();
+    }
+  }
+
+  void _loadFilteredTodoItems() {
+    final selectedDateStr = DateFormat('yyyy-MM-dd').format(widget.selectedDay);
+    
+    _database.orderByChild('date').startAt(selectedDateStr).endAt(selectedDateStr + '\uf8ff').onValue.listen((event) {
+      if (event.snapshot.value != null) {
+        setState(() {
+          _filteredTodoItems = (event.snapshot.value as Map<dynamic, dynamic>)
+              .entries
+              .map((e) {
+                final todoItem = TodoItem.fromSnapshot(e.key, e.value as Map<dynamic, dynamic>);
+                // 날짜만 비교
+                if (isSameDay(todoItem.date, widget.selectedDay)) {
+                  return todoItem;
+                }
+                return null;
+              })
+              .where((item) => item != null)
+              .cast<TodoItem>()
+              .toList();
+        });
+        print("${selectedDateStr}에 대해 로드된 일정 수: ${_filteredTodoItems.length}");
+      } else {
+        setState(() {
+          _filteredTodoItems = [];
+        });
+        print("${selectedDateStr}에 대한 일정이 없습니다.");
+      }
+    }, onError: (error) {
+      print("데이터 로딩 오류: $error");
+    });
+  }
+
+  // 날짜만 비교하는 헬퍼 함수
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && 
+          date1.month == date2.month && 
+          date1.day == date2.day;
+  }
+
+  void _deleteTodoItem(TodoItem deletedItem) {
+    _database.child(deletedItem.userId!).remove().then((_) {
+      setState(() {
+        _filteredTodoItems.remove(deletedItem);
+      });
+    }).catchError((error) {
+      print("삭제 오류: $error");
+    });
+  }
+
+  String getDateText(DateTime selectedDay){
+    final now = DateTime.now();
+    if (selectedDay.year == now.year &&
+        selectedDay.month == now.month &&
+        selectedDay.day == now.day) {
+      return 'TODAY';
+    } 
+    else {
+      return DateFormat('M.d').format(selectedDay);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,15 +143,10 @@ String getDateText(DateTime selectedDay){
                       IconButton(
                         icon: Icon(Icons.add, size: size.width * 0.06),
                         onPressed: () async {
-                          final schedule = await Navigator.push( // schedule에 pop하면서 리턴되는 TodoItem을 받습니다
+                          final newTodo = await Navigator.push( // schedule에 pop하면서 리턴되는 TodoItem을 받습니다
                             context,
                             MaterialPageRoute(builder: (context) => AddTodo()), // TodoItem 리턴
                           );
-                          if (schedule != null && schedule is TodoItem) {
-                            setState(() {
-                              todoItems.add(schedule); // todoItems에 받아온 schedule 저장
-                            });
-                          }
                         },
                       ),
                     ],
@@ -95,7 +155,10 @@ String getDateText(DateTime selectedDay){
                 SizedBox(height: size.height * 0.02),
                 Container(
                   height: size.height * 0.6 - padding.bottom,
-                  child: TodoList(todos: todoItems),
+                  child: TodoList(
+                    todoItems: _filteredTodoItems,
+                    onDelete: _deleteTodoItem,
+                  ),
                 ),
               ],
             ),
