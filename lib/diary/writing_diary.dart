@@ -133,7 +133,7 @@ class _WritingDiaryState extends State<WritingDiary> {
 
         String summary = AISentimentAnalyzer.createSummary(sentimentResult);
 
-        FirebaseFirestore.instance
+        await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
             .collection('danchu')
@@ -143,20 +143,19 @@ class _WritingDiaryState extends State<WritingDiary> {
           'content': _diaryController.text,
           'danchu': selectedDanchu,
           'summary': summary,
-        }).then((_) {
-          Navigator.pop(
-              context,
-              DiaryEntry(
-                content: _diaryController.text,
-                date: widget.selectedDate,
-                danchu: selectedDanchu,
-                summary: summary,
-              ));
-        }).catchError((error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('일기 저장 중 오류가 발생했습니다.')),
-          );
         });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('일기가 저장되었습니다.')),
+        );
+        Navigator.pop(
+            context,
+            DiaryEntry(
+              content: _diaryController.text,
+              date: widget.selectedDate,
+              danchu: selectedDanchu,
+              summary: summary,
+            ));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('로그인이 필요합니다.')),
