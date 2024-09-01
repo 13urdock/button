@@ -19,7 +19,6 @@ class EditDiary extends StatefulWidget {
 class _EditDiaryState extends State<EditDiary> {
   TextEditingController _diaryController = TextEditingController();
   String _selectedDanchu = '미정';
-  bool _isAnalyzing = false;
 
   @override
   void initState() {
