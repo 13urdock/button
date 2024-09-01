@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '/diary/diary_entry.dart';
 import '/diary/viewing_diary.dart';
-import '/diary/danchu_list.dart';
+import '../danchu/danchu_list.dart';
 
 class DiaryList extends StatelessWidget {
   final DateTime selectedDate;
 
   const DiaryList({Key? key, required this.selectedDate}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final User? user = _auth.currentUser;
+
+    if (user == null) {
+      return Center(child: Text('로그인이 필요합니다.'));
+    }
+
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
           .collection('danchu')
-          .where('date',
+          .where('date', //한달 일기만 출력
               isGreaterThanOrEqualTo:
                   DateTime(selectedDate.year, selectedDate.month, 1))
           .where('date',
@@ -26,9 +35,7 @@ class DiaryList extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
-              child: Text(
-                  '${selectedDate.year}년 ${selectedDate.month}월에 작성된 일기가 없습니다.'));
+          return Center(child: Text('이번 달에 작성된 일기가 없습니다.'));
         }
 
         List<DiaryEntry> diaries = snapshot.data!.docs.map((doc) {
@@ -37,6 +44,7 @@ class DiaryList extends StatelessWidget {
             content: data['content'],
             date: (data['date'] as Timestamp).toDate(),
             danchu: data['danchu'],
+            summary: data['summary'],
           );
         }).toList();
 
