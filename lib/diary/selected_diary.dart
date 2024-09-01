@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '/diary/diary_entry.dart';
 import 'writing_diary.dart';
 import '/diary/viewing_diary.dart';
-import '/diary/danchu_list.dart';
+import '../danchu/danchu_list.dart';
 import '/src/color.dart';
 
 class SelectedDiary extends StatelessWidget {
@@ -18,9 +19,18 @@ class SelectedDiary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final User? user = _auth.currentUser;
+
+    if (user == null) {
+      return Center(child: Text('로그인이 필요합니다.'));
+    }
+
     String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
           .collection('danchu')
           .doc(formattedDate)
           .snapshots(),
@@ -30,7 +40,8 @@ class SelectedDiary extends StatelessWidget {
           DiaryEntry entry = DiaryEntry(
             content: data['content'],
             date: selectedDay,
-            danchu: data['danchu'], //단추 종류로 변경
+            danchu: data['danchu'],
+            summary: data['summary'],
           );
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -39,8 +50,11 @@ class SelectedDiary extends StatelessWidget {
         } else {
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: !selectedDay.isAfter(DateTime(DateTime.now().year,
-                    DateTime.now().month, DateTime.now().day))
+            child: (selectedDay.year == DateTime.now().year &&
+                        selectedDay.month == DateTime.now().month &&
+                        selectedDay.day == DateTime.now().day) ||
+                    selectedDay.isBefore(DateTime(DateTime.now().year,
+                        DateTime.now().month, DateTime.now().day))
                 ? _buildEmptyDiaryButton(context)
                 : SizedBox(), // 미래 날짜일 경우 빈 화면 표시
           );
