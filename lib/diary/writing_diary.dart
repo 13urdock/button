@@ -1,11 +1,13 @@
-//빈일기, 일기 작성 -> 저장
+//일기작성페이지
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '/src/color.dart';
 import 'diary_entry.dart';
 import 'stt.dart';
+import 'ai_analyzer.dart';
 
 class WritingDiary extends StatefulWidget {
   final DateTime selectedDate;
@@ -18,6 +20,7 @@ class WritingDiary extends StatefulWidget {
 
 class _WritingDiaryState extends State<WritingDiary> {
   TextEditingController _diaryController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +35,10 @@ class _WritingDiaryState extends State<WritingDiary> {
             onPressed: () async {
               final result = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => STT(selectedDate: widget.selectedDate)),
-    );
+                MaterialPageRoute(
+                    builder: (context) =>
+                        STT(selectedDate: widget.selectedDate)),
+              );
               if (result != null) {
                 setState(() {
                   _diaryController.text = result;
@@ -116,27 +121,47 @@ class _WritingDiaryState extends State<WritingDiary> {
     );
   }
 
-  void _saveDiary(BuildContext context) {
+  void _saveDiary(BuildContext context) async {
     if (_diaryController.text.isNotEmpty) {
-      FirebaseFirestore.instance
-          .collection('danchu')
-          .doc(DateFormat('yyyy-MM-dd').format(widget.selectedDate))
-          .set({
-        'date': widget.selectedDate,
-        'content': _diaryController.text,
-        'danchu': "미정",
-      }).then((_) {
-        Navigator.pop(
-            context,
-            DiaryEntry(
+      User? user = _auth.currentUser;
+      if (user != null) {
+        Map<String, dynamic> sentimentResult =
+            await AISentimentAnalyzer.analyzeSentiment(_diaryController.text);
+
+        String selectedDanchu =
+            AISentimentAnalyzer.determineEmotionDanchu(sentimentResult);
+
+        String summary = AISentimentAnalyzer.createSummary(sentimentResult);
+
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('danchu')
+            .doc(DateFormat('yyyy-MM-dd').format(widget.selectedDate))
+            .set({
+          'date': widget.selectedDate,
+          'content': _diaryController.text,
+          'danchu': selectedDanchu,
+          'summary': summary,
+        }).then((_) {
+          Navigator.pop(
+              context,
+              DiaryEntry(
                 content: _diaryController.text,
                 date: widget.selectedDate,
-                danchu: '미정'));
-      }).catchError((error) {
+                danchu: selectedDanchu,
+                summary: summary,
+              ));
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('일기 저장 중 오류가 발생했습니다.')),
+          );
+        });
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('일기 저장 중 오류가 발생했습니다.')),
+          SnackBar(content: Text('로그인이 필요합니다.')),
         );
-      });
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('일기 내용을 입력해주세요.')),

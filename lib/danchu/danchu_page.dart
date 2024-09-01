@@ -1,6 +1,7 @@
-//단추 메인페이지
-
+import 'package:danchu/danchu/danchu_list.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'danchu_calendar.dart';
 import '/src/color.dart';
@@ -18,6 +19,44 @@ class DanchuPage extends StatefulWidget {
 
 class _DanchuPageState extends State<DanchuPage> {
   DateTime _selectedDay = DateTime.now();
+  Map<DateTime, Color> _markedDates = {};
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late Stream<QuerySnapshot> _danchuStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMarkedDates();
+  }
+
+  void _fetchMarkedDates() {
+    //마커 넣을 날짜
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      _danchuStream = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('danchu')
+          .snapshots();
+
+      _danchuStream.listen((snapshot) {
+        setState(() {
+          _markedDates = Map.fromEntries(snapshot.docs.map((doc) {
+            Timestamp timestamp = doc['date'] as Timestamp;
+            String emotion = doc['danchu'] as String;
+            return MapEntry(
+              DateTime(
+                timestamp.toDate().year,
+                timestamp.toDate().month,
+                timestamp.toDate().day,
+              ),
+              Danchu.getDanchuColor(emotion),
+            );
+          }));
+        });
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +73,12 @@ class _DanchuPageState extends State<DanchuPage> {
                     _selectedDay = selectedDay;
                   });
                 },
+                markedDates: _markedDates,
               ),
-              SizedBox(height: 20),
             ],
           ),
           DraggableStyle(
+            //draggable
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
