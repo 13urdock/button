@@ -57,7 +57,6 @@ class ShowFriendList extends StatelessWidget {
 
                     var userData = userSnapshot.data!.docs.first.data() as Map<String, dynamic>;
                     String profilePath = userData['profilePath'] ?? '';
-                    String nickname = userData['nickname'] ?? 'Unknown';
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5.0),

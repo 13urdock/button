@@ -1,12 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_speech/google_speech.dart';
-import 'package:flutter/services.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -22,35 +18,24 @@ class STT extends StatefulWidget {
 class _STTState extends State<STT> {
   bool _isListening = false;
   String _text = '';
-  late SpeechToText speechToText;
-  final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
-  String? _recordingPath;
+  late stt.SpeechToText _speech;
 
   @override
   void initState() {
     super.initState();
     _initSpeech();
-    _initRecorder();
   }
 
-  void _initSpeech() async {
-    try {
-      final serviceAccount = ServiceAccount.fromString(
-        '${(await rootBundle.loadString('assets/psyched-era-430113-v1-7b2f431ade12.json'))}',
-      );
-      speechToText = SpeechToText.viaServiceAccount(serviceAccount);
-      print('Speech initialized successfully');
-    } catch (e) {
-      print('Error initializing speech: $e');
-    }
-  }
-
-  Future<void> _initRecorder() async {
-    try {
-      await _recorder.openRecorder();
-      print('Recorder initialized successfully');
-    } catch (e) {
-      print('Error initializing recorder: $e');
+  Future<void> _initSpeech() async {
+    _speech = stt.SpeechToText();
+    bool available = await _speech.initialize(
+      onStatus: (status) => print('Speech recognition status: $status'),
+      onError: (errorNotification) => print('Speech recognition error: $errorNotification'),
+    );
+    if (available) {
+      print('Speech recognition initialized successfully');
+    } else {
+      print('Speech recognition is not available');
     }
   }
 
@@ -67,112 +52,37 @@ class _STTState extends State<STT> {
     return true;
   }
 
-  void _listen() async {
+  Future<void> _listen() async {
     final hasPermission = await _requestPermissions();
     if (!hasPermission) return;
 
-    if (!_isListening) {
-      try {
-        setState(() => _isListening = true);
+    if (_isListening) {
+      await _stopListening();
+      return;
+    }
 
-        _recordingPath = await _startRecording();
-        print('Recording started at: $_recordingPath');
+    setState(() => _isListening = true);
 
-        final config = RecognitionConfig(
-          encoding: AudioEncoding.LINEAR16,
-          model: RecognitionModel.basic,
-          enableAutomaticPunctuation: true,
-          sampleRateHertz: 16000,
-          languageCode: 'ko-KR',
-        );
-
-        final audioStream = await _getAudioStream();
-
-        final streamingConfig = StreamingRecognitionConfig(
-          config: config,
-          interimResults: true,
-        );
-
-        print('Starting speech recognition...');
-        final responseStream = speechToText.streamingRecognize(
-          streamingConfig,
-          audioStream,
-        );
-
-        responseStream.listen((data) {
-          print('Received speech recognition data: $data');
-          for (var result in data.results) {
-            setState(() {
-              if (result.alternatives.isNotEmpty) {
-                String transcript = result.alternatives.first.transcript;
-                bool isFinal = result.isFinal;
-                print(
-                    'Recognized text (${isFinal ? 'final' : 'interim'}): $transcript');
-                _text = transcript;
-              } else {
-                print('No alternatives found in the result');
-              }
-            });
-          }
-        }, onDone: () {
-          print('Speech recognition completed');
-          setState(() => _isListening = false);
-          _stopRecording();
-          _saveTranscript();
-        }, onError: (error) {
-          print('Error during speech recognition: $error');
-          setState(() => _isListening = false);
-          _stopRecording();
+    await _speech.listen(
+      onResult: (result) {
+        setState(() {
+          _text = result.recognizedWords;
         });
-      } catch (e) {
-        print('Error in _listen method: $e');
-        setState(() => _isListening = false);
-        _stopRecording();
-      }
-    } else {
-      setState(() => _isListening = false);
-      _stopRecording();
-    }
+      },
+      localeId: 'ko-KR',
+    );
+
+    print('Listening started');
   }
 
-  Future<Stream<List<int>>> _getAudioStream() async {
-    if (_recordingPath == null) {
-      throw Exception('Recording path is null');
-    }
-    final file = File(_recordingPath!);
-    if (!await file.exists()) {
-      throw Exception('Audio file does not exist: $_recordingPath');
-    }
-    print('Audio file size: ${await file.length()} bytes');
-    return file.openRead();
-  }
+  Future<void> _stopListening() async {
+    if (!_isListening) return;
 
-  Future<String> _startRecording() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path =
-        '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
-    try {
-      await _recorder.startRecorder(
-        toFile: path,
-        codec: Codec.pcm16WAV,
-        sampleRate: 16000,
-        numChannels: 1,
-      );
-      print('Recording started successfully');
-      return path;
-    } catch (e) {
-      print('Error starting recording: $e');
-      rethrow;
-    }
-  }
+    setState(() => _isListening = false);
+    await _speech.stop();
+    await _saveTranscript();
 
-  Future<void> _stopRecording() async {
-    try {
-      await _recorder.stopRecorder();
-      print('Recording stopped');
-    } catch (e) {
-      print('Error stopping recording: $e');
-    }
+    print('Listening stopped');
   }
 
   Future<void> _saveTranscript() async {
@@ -207,12 +117,6 @@ class _STTState extends State<STT> {
         const SnackBar(content: Text('로그인이 필요합니다.')),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    _recorder.closeRecorder();
-    super.dispose();
   }
 
   @override
