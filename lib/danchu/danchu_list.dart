@@ -30,6 +30,7 @@ class Danchu {
   ];
 
   String getDanchu(String emotion) {
+    //단추 주소 return함수
     for (var danchu in danchuList) {
       if (danchu["danchu"] == emotion) {
         return danchu["imgUrl"];
@@ -39,6 +40,7 @@ class Danchu {
   }
 
   static Color getDanchuColor(String emotion) {
+    //마커 색상 return함수
     for (var danchu in danchuList) {
       if (danchu["danchu"] == emotion) {
         return Color(int.parse("0xFF${danchu["color"]}"));

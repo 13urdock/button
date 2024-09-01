@@ -55,6 +55,7 @@ class _EditDiaryState extends State<EditDiary> {
   }
 
   Future<void> _saveDiary() async {
+    //저장함수
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final User? user = _auth.currentUser;
     if (user == null) return;
@@ -158,8 +159,10 @@ class _EditDiaryState extends State<EditDiary> {
     );
   }
 
-  Widget _buildContentBox(BuildContext context,
-      {double? height, required String content, required bool isEditable}) {
+  Widget _buildContentBox(BuildContext context, //일기작성박스
+      {double? height,
+      required String content,
+      required bool isEditable}) {
     return Container(
       height: height,
       margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -194,6 +197,7 @@ class _EditDiaryState extends State<EditDiary> {
   }
 
   void _deleteDiary(BuildContext context) {
+    //삭제함수
     showDialog(
       context: context,
       builder: (BuildContext context) {

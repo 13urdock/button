@@ -1,3 +1,5 @@
+//일기 리스트에서 선택한날짜 일기 유무
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

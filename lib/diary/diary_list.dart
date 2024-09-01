@@ -25,7 +25,7 @@ class DiaryList extends StatelessWidget {
           .collection('users')
           .doc(user.uid)
           .collection('danchu')
-          .where('date',
+          .where('date', //한달 일기만 출력
               isGreaterThanOrEqualTo:
                   DateTime(selectedDate.year, selectedDate.month, 1))
           .where('date',

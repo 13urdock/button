@@ -58,7 +58,7 @@ class _DanchuCalendarState extends State<DanchuCalendar> {
                         shape: BoxShape.circle,
                         color: widget.markedDates[markedDate],
                       ),
-                      width: 15.0,
+                      width: 15.0, //마커 크기
                       height: 15.0,
                     ),
                   ),
@@ -98,6 +98,7 @@ class _DanchuCalendarState extends State<DanchuCalendar> {
 }
 
 class DottedLinePainter extends CustomPainter {
+  //연속일기 점선
   final Axis direction;
 
   DottedLinePainter({required this.direction});

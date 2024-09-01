@@ -1,4 +1,4 @@
-//빈일기, 일기 작성 -> 저장
+//일기작성페이지
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

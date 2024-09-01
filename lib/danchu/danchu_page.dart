@@ -29,6 +29,7 @@ class _DanchuPageState extends State<DanchuPage> {
   }
 
   void _fetchMarkedDates() {
+    //마커 넣을 날짜
     final User? user = _auth.currentUser;
     if (user != null) {
       _danchuStream = FirebaseFirestore.instance
@@ -76,6 +77,7 @@ class _DanchuPageState extends State<DanchuPage> {
             ],
           ),
           DraggableStyle(
+            //draggable
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
