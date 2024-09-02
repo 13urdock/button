@@ -8,12 +8,13 @@ import '../models/todo_item.dart';
 import '../models/custom_circle_icon.dart';
 import '/src/color.dart';
 import '/src/time_picker.dart';
+import 'routine_widgget.dart';
 
 class AddTodo extends StatefulWidget {
   final DateTime selectedDay;
 
   AddTodo({required this.selectedDay});
-  
+
   @override
   _AddTodoState createState() => _AddTodoState();
 }
@@ -226,11 +227,15 @@ class _AddTodoState extends State<AddTodo> {
 
   Widget _buildRoutineCalendar(Size screenSize) {
     return Container(
-      height: screenSize.height * 0.3,
-      child: Center(
-        child: Text('캘린더 위젯 (구현 필요)',
-            style: TextStyle(
-                fontSize: screenSize.width * 0.04, color: Colors.black)),
+      height: screenSize.height * 0.5,
+      child: RoutineWidget(
+        initialStartDate: _selectedDate,
+        initialEndDate: _selectedDate.add(Duration(days: 7)),
+        onRoutineSet: (List<DateTime> routineDates) {
+          setState(() {
+            routineDates = routineDates;
+          });
+        },
       ),
     );
   }
