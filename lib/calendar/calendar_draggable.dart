@@ -32,8 +32,7 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
     final User? user = _auth.currentUser;
     if (user == null) {
       print('로그인하세요');
-      return Stream
-          .empty(); // Return an empty stream if the user is not logged in
+      return Stream.empty();
     }
 
     final DateTime startOfDay = DateTime(widget.selectedDay.year,
@@ -43,31 +42,22 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
     final Timestamp startTimestamp = Timestamp.fromDate(startOfDay);
     final Timestamp endTimestamp = Timestamp.fromDate(endOfDay);
 
-    try {
-      final QuerySnapshot snapshot = await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('todos')
-          .where('date', isGreaterThanOrEqualTo: startTimestamp)
-          .where('date', isLessThan: endTimestamp)
-          .get();
-
-      setState(() {
-        _filteredTodoItems = snapshot.docs.map((doc) {
-          return TodoItem.fromFirestore(doc);
-        }).toList();
-      });
-
-      print("${DateFormat('yyyy-MM-dd').format(widget.selectedDay)}에 대해 로드된 일정 수: ${_filteredTodoItems.length}");
-    } catch (error) {
-      print("데이터 로딩 오류: $error");
-    }
+    return _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('todos')
+        .where('date', isGreaterThanOrEqualTo: startTimestamp)
+        .where('date', isLessThan: endTimestamp)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              return TodoItem.fromFirestore(doc);
+            }).toList());
   }
 
   bool isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && 
-           date1.month == date2.month && 
-           date1.day == date2.day;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   void _deleteTodoItem(TodoItem deletedItem) async {
@@ -103,7 +93,8 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
           .update(updatedItem.toJson());
 
       setState(() {
-        final index = _filteredTodoItems.indexWhere((item) => item.id == updatedItem.id);
+        final index =
+            _filteredTodoItems.indexWhere((item) => item.id == updatedItem.id);
         if (index != -1) {
           _filteredTodoItems[index] = updatedItem;
         }
@@ -172,10 +163,11 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                       IconButton(
                         icon: Icon(Icons.add, size: size.width * 0.06),
                         onPressed: () async {
-
                           final newTodo = await Navigator.push<TodoItem>(
                             context,
-                            MaterialPageRoute(builder: (context) => AddTodo(selectedDay: widget.selectedDay)),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AddTodo(selectedDay: widget.selectedDay)),
                           );
                           if (newTodo != null) {
                             setState(() {
@@ -188,7 +180,6 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                   ),
                 ),
                 SizedBox(height: size.height * 0.02),
-
                 StreamBuilder<List<TodoItem>>(
                   stream: _getTodoItemsStream(),
                   builder: (context, snapshot) {
@@ -200,22 +191,10 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                       return Container(
                         height: size.height * 0.6 - padding.bottom,
                         child: TodoList(
+                          today: widget.selectedDay,
                           todoItems: snapshot.data!,
-                          onDelete: (item) async {
-                            final User? user = _auth.currentUser;
-                            if (user == null) return;
-
-                            try {
-                              await _firestore
-                                  .collection('users')
-                                  .doc(user.uid)
-                                  .collection('todos')
-                                  .doc(item.id)
-                                  .delete();
-                            } catch (error) {
-                              print("삭제 오류: $error");
-                            }
-                          },
+                          onDelete: _deleteTodoItem,
+                          onEdit: _editTodoItem,
                         ),
                       );
                     }
