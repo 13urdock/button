@@ -7,12 +7,13 @@ import 'package:flutter/services.dart';
 import '../models/todo_item.dart';
 import '../models/custom_circle_icon.dart';
 import '/src/color.dart';
+import 'routine_widgget.dart';
 
 class EditTodo extends StatefulWidget {
   final TodoItem todoItem;
 
   EditTodo({required this.todoItem});
-  
+
   @override
   _EditTodoState createState() => _EditTodoState();
 }
@@ -34,7 +35,8 @@ class _EditTodoState extends State<EditTodo> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.todoItem.title);
-    _descriptionController = TextEditingController(text: widget.todoItem.description);
+    _descriptionController =
+        TextEditingController(text: widget.todoItem.description);
     _selectedColor = widget.todoItem.iconColor;
     _selectedDate = widget.todoItem.date;
     _beginTime = widget.todoItem.beginTime != null
@@ -140,8 +142,10 @@ class _EditTodoState extends State<EditTodo> {
         decoration: InputDecoration(
           labelText: '날짜',
           labelStyle: TextStyle(color: Colors.black),
-          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+          border:
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+          focusedBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,7 +165,8 @@ class _EditTodoState extends State<EditTodo> {
     return Row(
       children: [
         Text('하루종일',
-            style: TextStyle(fontSize: screenSize.width * 0.04, color: Colors.black)),
+            style: TextStyle(
+                fontSize: screenSize.width * 0.04, color: Colors.black)),
         Spacer(),
         Switch(
           value: isAllDay,
@@ -181,32 +186,42 @@ class _EditTodoState extends State<EditTodo> {
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTimePicker('시작 시간', _beginTime, (time) => setState(() => _beginTime = time!)),
+              _buildTimePicker('시작 시간', _beginTime,
+                  (time) => setState(() => _beginTime = time!)),
               SizedBox(height: screenSize.height * 0.02),
-              _buildTimePicker('종료 시간', _endTime, (time) => setState(() => _endTime = time!)),
+              _buildTimePicker('종료 시간', _endTime,
+                  (time) => setState(() => _endTime = time!)),
             ],
           )
         : Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(child: _buildTimePicker('시작 시간', _beginTime, (time) => setState(() => _beginTime = time!))),
+              Expanded(
+                  child: _buildTimePicker('시작 시간', _beginTime,
+                      (time) => setState(() => _beginTime = time!))),
               SizedBox(width: screenSize.width * 0.02),
-              Expanded(child: _buildTimePicker('종료 시간', _endTime, (time) => setState(() => _endTime = time!))),
+              Expanded(
+                  child: _buildTimePicker('종료 시간', _endTime,
+                      (time) => setState(() => _endTime = time!))),
             ],
           );
   }
 
-  Widget _buildTimePicker(String label, TimeOfDay time, Function(TimeOfDay?) onChanged) {
+  Widget _buildTimePicker(
+      String label, TimeOfDay time, Function(TimeOfDay?) onChanged) {
     return InkWell(
       onTap: () => _selectTime(context, onChanged),
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(color: Colors.black),
-          border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+          border:
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+          focusedBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
         ),
-        child: Text('${time.format(context)}', style: TextStyle(color: Colors.black)),
+        child: Text('${time.format(context)}',
+            style: TextStyle(color: Colors.black)),
       ),
     );
   }
@@ -217,7 +232,8 @@ class _EditTodoState extends State<EditTodo> {
         Icon(Icons.repeat, size: screenSize.width * 0.05, color: Colors.black),
         SizedBox(width: screenSize.width * 0.02),
         Text('루틴 설정',
-            style: TextStyle(fontSize: screenSize.width * 0.04, color: Colors.black)),
+            style: TextStyle(
+                fontSize: screenSize.width * 0.04, color: Colors.black)),
         Spacer(),
         Switch(
           value: isRoutine,
@@ -234,10 +250,15 @@ class _EditTodoState extends State<EditTodo> {
 
   Widget _buildRoutineCalendar(Size screenSize) {
     return Container(
-      height: screenSize.height * 0.3,
-      child: Center(
-        child: Text('캘린더 위젯 (구현 필요)',
-            style: TextStyle(fontSize: screenSize.width * 0.04, color: Colors.black)),
+      height: screenSize.height * 0.5,
+      child: RoutineWidget(
+        initialStartDate: _selectedDate,
+        initialEndDate: _selectedDate.add(Duration(days: 7)),
+        onRoutineSet: (List<DateTime> routineDates) {
+          setState(() {
+            routineDates = routineDates;
+          });
+        },
       ),
     );
   }
@@ -250,7 +271,8 @@ class _EditTodoState extends State<EditTodo> {
         labelText: '설명',
         labelStyle: TextStyle(color: Colors.black),
         border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
+        focusedBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
       ),
       style: TextStyle(color: Colors.black),
     );
@@ -284,7 +306,8 @@ class _EditTodoState extends State<EditTodo> {
       });
   }
 
-  Future<void> _selectTime(BuildContext context, Function(TimeOfDay?) onChanged) async {
+  Future<void> _selectTime(
+      BuildContext context, Function(TimeOfDay?) onChanged) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -298,7 +321,8 @@ class _EditTodoState extends State<EditTodo> {
     final User? user = _auth.currentUser;
 
     if (user != null) {
-      if (_titleController.text.isNotEmpty && _descriptionController.text.isNotEmpty) {
+      if (_titleController.text.isNotEmpty &&
+          _descriptionController.text.isNotEmpty) {
         final updatedTodo = TodoItem(
           id: widget.todoItem.id,
           userId: user.uid,
@@ -307,10 +331,12 @@ class _EditTodoState extends State<EditTodo> {
           description: _descriptionController.text,
           beginTime: isAllDay
               ? null
-              : DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _beginTime.hour, _beginTime.minute),
+              : DateTime(_selectedDate.year, _selectedDate.month,
+                  _selectedDate.day, _beginTime.hour, _beginTime.minute),
           endTime: isAllDay
               ? null
-              : DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _endTime.hour, _endTime.minute),
+              : DateTime(_selectedDate.year, _selectedDate.month,
+                  _selectedDate.day, _endTime.hour, _endTime.minute),
           isRoutine: isRoutine,
           isAllDay: isAllDay,
           iconColor: _selectedColor,
