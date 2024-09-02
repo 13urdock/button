@@ -11,19 +11,24 @@ class ProfileSetting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.danchuYellow,
+        title: Text('설정', style: TextStyle(color: Colors.black)),
+        elevation: 0,
+      ),
       body: Container(
         color: AppColors.danchuYellow,
-        child: Stack(
+        child: Column(
           children: [
-            Positioned(
-              left: 0,
-              top: 100,
+            SizedBox(height: 20),
+            Expanded(
               child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height - 100,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Color(0x3FFFD76E),
@@ -33,63 +38,52 @@ class ProfileSetting extends StatelessWidget {
                     )
                   ],
                 ),
-              ),
-            ),
-            Positioned(
-              top: 50,
-              left: 20,
-              child: Text(
-                '설정',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+                child: ListView(
+                  children: [
+                    _buildButton(context, Icons.person, '계정 설정',
+                        ProfileSettingAccount()),
+                    _buildButton(context, Icons.notifications, '알림 설정',
+                        ProfileSettingNotification()),
+                    _buildButton(
+                        context, Icons.people, '친구', ProfileSettingFriend()),
+                    _buildButton(
+                        context, Icons.color_lens, '테마 설정', ProfileTheme()),
+                    _buildButton(
+                        context, Icons.announcement, '공지', NoticePage()),
+                  ],
                 ),
               ),
             ),
-            _buildButton(context, Icons.person, '계정 설정', ProfileSettingAccount(), 120),
-            _buildButton(context, Icons.notifications, '알림 설정', ProfileSettingNotification(), 180),
-            _buildButton(context, Icons.people, '친구', ProfileSettingFriend(), 240),
-            _buildButton(context, Icons.color_lens, '테마 설정', ProfileTheme(), 300),
-            _buildButton(context, Icons.announcement, '공지', NoticePage(), 360),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildButton(BuildContext context, IconData icon, String text, Widget page, double top) {
-    return Positioned(
-      left: 0,
-      top: top,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => page),
-          );
-        },
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          child: Row(
-            children: [
-              Container(
-                width: 24,
-                height: 24,
-                child: Icon(icon, size: 24, color: Colors.black),
+  Widget _buildButton(
+      BuildContext context, IconData icon, String text, Widget page) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        child: Row(
+          children: [
+            Icon(icon, size: 24, color: Colors.black),
+            SizedBox(width: 16),
+            Text(
+              text,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
-              SizedBox(width: 16),
-              Text(
-                text,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -100,7 +94,10 @@ class FriendsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('친구')),
+      appBar: AppBar(
+        title: Text('친구'),
+        backgroundColor: AppColors.danchuYellow,
+      ),
       body: Center(child: Text('친구 페이지')),
     );
   }
@@ -110,7 +107,10 @@ class ThemeSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('테마 설정')),
+      appBar: AppBar(
+        title: Text('테마 설정'),
+        backgroundColor: AppColors.danchuYellow,
+      ),
       body: Center(child: Text('테마 설정 페이지')),
     );
   }
@@ -120,7 +120,10 @@ class NoticePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('공지')),
+      appBar: AppBar(
+        title: Text('공지'),
+        backgroundColor: AppColors.danchuYellow,
+      ),
       body: Center(child: Text('공지 페이지')),
     );
   }

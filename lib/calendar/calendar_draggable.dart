@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'calendar.dart';
 import 'calendar_add_todo.dart';
 import 'calendar_todo_list.dart';
 import '../models/todo_item.dart';
@@ -11,7 +10,8 @@ import '../models/todo_item.dart';
 class CalendarDraggable extends StatefulWidget {
   final DateTime selectedDay;
 
-  const CalendarDraggable({Key? key, required this.selectedDay}) : super(key: key);
+  const CalendarDraggable({Key? key, required this.selectedDay})
+      : super(key: key);
 
   @override
   _CalendarDraggableState createState() => _CalendarDraggableState();
@@ -26,25 +26,20 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
   @override
   void initState() {
     super.initState();
-    _loadFilteredTodoItems();
   }
 
-  @override
-  void didUpdateWidget(CalendarDraggable oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.selectedDay != widget.selectedDay) {
-      _loadFilteredTodoItems();
-    }
-  }
-
-  void _loadFilteredTodoItems() async {
+  Stream<List<TodoItem>> _getTodoItemsStream() {
     final User? user = _auth.currentUser;
     if (user == null) {
       print('로그인하세요');
-      return;
+      return Stream
+          .empty(); // Return an empty stream if the user is not logged in
     }
-    final DateTime startOfDay = DateTime(widget.selectedDay.year, widget.selectedDay.month, widget.selectedDay.day);
-    final DateTime endOfDay = startOfDay.add(Duration(days: 1)).subtract(Duration(microseconds: 1));
+
+    final DateTime startOfDay = DateTime(widget.selectedDay.year,
+        widget.selectedDay.month, widget.selectedDay.day);
+    final DateTime endOfDay =
+        startOfDay.add(Duration(days: 1)).subtract(Duration(microseconds: 1));
     final Timestamp startTimestamp = Timestamp.fromDate(startOfDay);
     final Timestamp endTimestamp = Timestamp.fromDate(endOfDay);
 
@@ -177,6 +172,7 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                       IconButton(
                         icon: Icon(Icons.add, size: size.width * 0.06),
                         onPressed: () async {
+
                           final newTodo = await Navigator.push<TodoItem>(
                             context,
                             MaterialPageRoute(builder: (context) => AddTodo(selectedDay: widget.selectedDay)),
@@ -192,14 +188,38 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                   ),
                 ),
                 SizedBox(height: size.height * 0.02),
-                Container(
-                  height: size.height * 0.6 - padding.bottom,
-                  child: TodoList(
-                    today: widget.selectedDay,
-                    todoItems: _filteredTodoItems,
-                    onDelete: _deleteTodoItem,
-                    onEdit: _editTodoItem,
-                  ),
+
+                StreamBuilder<List<TodoItem>>(
+                  stream: _getTodoItemsStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else {
+                      return Container(
+                        height: size.height * 0.6 - padding.bottom,
+                        child: TodoList(
+                          todoItems: snapshot.data!,
+                          onDelete: (item) async {
+                            final User? user = _auth.currentUser;
+                            if (user == null) return;
+
+                            try {
+                              await _firestore
+                                  .collection('users')
+                                  .doc(user.uid)
+                                  .collection('todos')
+                                  .doc(item.id)
+                                  .delete();
+                            } catch (error) {
+                              print("삭제 오류: $error");
+                            }
+                          },
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             ),

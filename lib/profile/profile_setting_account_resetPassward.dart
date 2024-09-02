@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'authService.dart';
 import 'emailService.dart';
+import '/src/color.dart';
 
-class ProfileSettingAccountResetPassward extends StatefulWidget {
-  const ProfileSettingAccountResetPassward({Key? key}) : super(key: key);
+class ProfileSettingAccountResetPassword extends StatefulWidget {
+  const ProfileSettingAccountResetPassword({Key? key}) : super(key: key);
 
   @override
-  _ProfileSettingAccountResetPasswardState createState() => _ProfileSettingAccountResetPasswardState();
+  _ProfileSettingAccountResetPasswordState createState() =>
+      _ProfileSettingAccountResetPasswordState();
 }
 
-class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccountResetPassward> {
+class _ProfileSettingAccountResetPasswordState
+    extends State<ProfileSettingAccountResetPassword> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -24,14 +27,17 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      appBar: AppBar(
+        title: Text('비밀번호 재설정', style: TextStyle(color: Colors.black)),
+        backgroundColor: AppColors.danchuYellow,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
+      body: Container(
+        color: AppColors.danchuYellow,
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              height: 66,
-              color: Color(0xFFFFD66E),
-            ),
+            SizedBox(height: 20),
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -58,31 +64,23 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(height: 30),
-                          Container(
-                            width: 94,
-                            height: 94,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: AssetImage("asset/danchu_3Dlogo.png"),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
                           SizedBox(height: 40),
                           _buildTextField("Email", _emailController),
                           SizedBox(height: 20),
-                          _buildTextField("비밀번호 변경", _passwordController, isPassword: true),
+                          _buildTextField("비밀번호 변경", _passwordController,
+                              isPassword: true),
                           SizedBox(height: 20),
-                          _buildTextField("비밀번호 변경 확인", _confirmPasswordController, isPassword: true),
+                          _buildTextField(
+                              "비밀번호 변경 확인", _confirmPasswordController,
+                              isPassword: true),
                           SizedBox(height: 20),
                           _buildTextField("인증번호", _verificationCodeController),
                           SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _buildButton("인증번호 받기", onPressed: _sendVerificationCode),
+                              _buildButton("인증번호 받기",
+                                  onPressed: _sendVerificationCode),
                               _buildButton("인증번호 확인", onPressed: _verifyCode),
                             ],
                           ),
@@ -94,6 +92,7 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
                               child: Text("확인"),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
+                                foregroundColor: Colors.white,
                                 padding: EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(9),
@@ -108,14 +107,14 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
                 ),
               ),
             ),
-            // TODO: Add navigation bar here
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool isPassword = false}) {
+  Widget _buildTextField(String label, TextEditingController controller,
+      {bool isPassword = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -155,7 +154,8 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
       onPressed: onPressed,
       child: Text(text),
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black, backgroundColor: Color(0xFFD9D9D9),
+        foregroundColor: Colors.black,
+        backgroundColor: Color(0xFFD9D9D9),
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(9),
@@ -172,7 +172,8 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
       return;
     }
     try {
-      _verificationId = await _emailService.sendVerificationCode(_emailController.text);
+      _verificationId =
+          await _emailService.sendVerificationCode(_emailController.text);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('인증번호가 전송되었습니다')),
       );
@@ -190,7 +191,8 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
       );
       return;
     }
-    bool isValid = await _authService.verifyCode(_verificationId!, _verificationCodeController.text);
+    bool isValid = await _authService.verifyCode(
+        _verificationId!, _verificationCodeController.text);
     if (isValid) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('인증이 완료되었습니다')),
@@ -211,7 +213,8 @@ class _ProfileSettingAccountResetPasswardState extends State<ProfileSettingAccou
         return;
       }
       try {
-        await _authService.resetPassword(_emailController.text, _passwordController.text);
+        await _authService.resetPassword(
+            _emailController.text, _passwordController.text);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('비밀번호가 성공적으로 변경되었습니다')),
         );
