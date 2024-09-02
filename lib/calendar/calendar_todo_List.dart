@@ -2,39 +2,48 @@ import 'package:flutter/material.dart';
 import '../models/todo_item.dart';
 import '../models/custom_circle_icon.dart';
 import '../src/color.dart';
-import 'calendar_add_todo.dart';
+import 'calendar_edit_todo.dart';
 
 class TodoList extends StatefulWidget {
+  final DateTime today;
   final List<TodoItem> todoItems;
   final Function(TodoItem) onDelete;
+  final Function(TodoItem) onEdit;  // 새로 추가된 콜백
 
-  TodoList({required this.todoItems, required this.onDelete});
+  TodoList({
+    required this.today,
+    required this.todoItems,
+    required this.onDelete,
+    required this.onEdit,  // 새로 추가된 콜백
+  });
 
   @override
   _TodoListState createState() => _TodoListState();
 }
 
 class _TodoListState extends State<TodoList> {
-  Set<String> selectedItems = {};
+  late List<bool> _isDoneList;
 
-  void toggleSelection(String userId) {
-    setState(() {
-      if (selectedItems.contains(userId)) {
-        selectedItems.remove(userId);
-      } else {
-        selectedItems.add(userId);
-      }
-    });
+  @override
+  void initState() {
+    super.initState();
+    _isDoneList = List.generate(widget.todoItems.length, (_) => false);
+  }
+
+  @override
+  void didUpdateWidget(TodoList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.todoItems.length != _isDoneList.length) {
+      _isDoneList = List.generate(widget.todoItems.length, (_) => false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     print("TodoList: 총 ${widget.todoItems.length}개의 일정이 있습니다.");
-
     if (widget.todoItems.isEmpty) {
       return Center(child: Text("일정이 없습니다."));
     }
-
     try {
       return ListView.builder(
         shrinkWrap: true,
@@ -42,10 +51,9 @@ class _TodoListState extends State<TodoList> {
         itemCount: widget.todoItems.length,
         itemBuilder: (context, index) {
           final todo = widget.todoItems[index];
-          bool isdone = false;
           print("렌더링 중인 일정: ${todo.title}");
           return Dismissible(
-            key: Key(todo.userId ?? ''),
+            key: Key(todo.id ?? ''),
             onDismissed: (direction) {
               widget.onDelete(todo);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -55,24 +63,26 @@ class _TodoListState extends State<TodoList> {
             background: Container(color: AppColors.deepYellow),
             child: ListTile(
               leading: GestureDetector(
-                onTap: (){
+                onTap: () {
                   setState(() {
-                    isdone = !isdone;
+                    _isDoneList[index] = !_isDoneList[index];
                   });
                 },
                 child: CustomCircleIcon(
                   color: todo.iconColor,
-                  isSelected: isdone,
+                  isSelected: _isDoneList[index],
                 ),
               ),
               title: Text(todo.title),
               subtitle: Text(todo.description),
-              onTap: () {
-                // AddTodo 위젯으로 네비게이션
-                Navigator.push(
+              onTap: () async {
+                final updatedTodo = await Navigator.push<TodoItem>(
                   context,
-                  MaterialPageRoute(builder: (context) => AddTodo()),
+                  MaterialPageRoute(builder: (context) => EditTodo(todoItem: todo)),
                 );
+                if (updatedTodo != null) {
+                  widget.onEdit(updatedTodo);
+                }
               },
             ),
           );
