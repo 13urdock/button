@@ -35,7 +35,8 @@ class _CirclePainter extends CustomPainter {
       ..strokeWidth = 4;
 
     canvas.drawCircle(size.center(Offset.zero), size.width / 2, paint);
-
+    
+    // 선택되면 속에 원을 그리기
     if (isSelected) {
       paint
         ..style = PaintingStyle.fill
