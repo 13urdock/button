@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'calendar.dart'; // 날짜와 연결하기 위해서 
+import 'calendar.dart';
 import 'calendar_add_todo.dart';
 import 'calendar_todo_list.dart';
 import '../models/todo_item.dart';
@@ -21,7 +21,7 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List<TodoItem> _filteredTodoItems= []; // 선택된 날의 일정을 담아놓는 일정 리스트. 나중에 데이터베이스와 연결하기
+  List<TodoItem> _filteredTodoItems = [];
 
   @override
   void initState() {
@@ -69,11 +69,10 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
     }
   }
 
-  // 날짜만 비교하는 헬퍼 함수
   bool isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year && 
-          date1.month == date2.month && 
-          date1.day == date2.day;
+           date1.month == date2.month && 
+           date1.day == date2.day;
   }
 
   void _deleteTodoItem(TodoItem deletedItem) async {
@@ -96,14 +95,36 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
     }
   }
 
-  String getDateText(DateTime selectedDay){
+  void _editTodoItem(TodoItem updatedItem) async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('todos')
+          .doc(updatedItem.id)
+          .update(updatedItem.toJson());
+
+      setState(() {
+        final index = _filteredTodoItems.indexWhere((item) => item.id == updatedItem.id);
+        if (index != -1) {
+          _filteredTodoItems[index] = updatedItem;
+        }
+      });
+    } catch (error) {
+      print("수정 오류: $error");
+    }
+  }
+
+  String getDateText(DateTime selectedDay) {
     final now = DateTime.now();
     if (selectedDay.year == now.year &&
         selectedDay.month == now.month &&
         selectedDay.day == now.day) {
       return 'TODAY';
-    } 
-    else {
+    } else {
       return DateFormat('M.d').format(selectedDay);
     }
   }
@@ -114,11 +135,11 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
     final padding = MediaQuery.of(context).padding;
 
     return DraggableScrollableSheet(
-      initialChildSize: 0.35, // draggable 첫 위치
-      minChildSize: 0.35, // 최소 위치
-      maxChildSize: 1.0, // 최대 위치
+      initialChildSize: 0.35,
+      minChildSize: 0.35,
+      maxChildSize: 1.0,
       builder: (BuildContext context, ScrollController scrollController) {
-        return Container( // draggable되는 박스
+        return Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -131,7 +152,7 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
             child: Column(
               children: [
                 Center(
-                  child: Container( // 상단 회색 바
+                  child: Container(
                     width: size.width * 0.1,
                     height: 5,
                     margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
@@ -143,7 +164,7 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-                  child: Row( // 날짜 표시, 일정 추가 버튼
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -156,10 +177,15 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                       IconButton(
                         icon: Icon(Icons.add, size: size.width * 0.06),
                         onPressed: () async {
-                          final newTodo = await Navigator.push( // schedule에 pop하면서 리턴되는 TodoItem을 받습니다
+                          final newTodo = await Navigator.push<TodoItem>(
                             context,
-                            MaterialPageRoute(builder: (context) => AddTodo()), // TodoItem 리턴
+                            MaterialPageRoute(builder: (context) => AddTodo(selectedDay: widget.selectedDay)),
                           );
+                          if (newTodo != null) {
+                            setState(() {
+                              _filteredTodoItems.add(newTodo);
+                            });
+                          }
                         },
                       ),
                     ],
@@ -169,8 +195,10 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                 Container(
                   height: size.height * 0.6 - padding.bottom,
                   child: TodoList(
+                    today: widget.selectedDay,
                     todoItems: _filteredTodoItems,
                     onDelete: _deleteTodoItem,
+                    onEdit: _editTodoItem,
                   ),
                 ),
               ],
