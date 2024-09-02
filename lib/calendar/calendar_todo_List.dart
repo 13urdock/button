@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/todo_item.dart';
 import '../models/custom_circle_icon.dart';
 import '../src/color.dart';
+import 'calendar_add_todo.dart';
 
 class TodoList extends StatefulWidget {
   final List<TodoItem> todoItems;
@@ -41,7 +42,7 @@ class _TodoListState extends State<TodoList> {
         itemCount: widget.todoItems.length,
         itemBuilder: (context, index) {
           final todo = widget.todoItems[index];
-          final isSelected = selectedItems.contains(todo.userId);
+          bool isdone = false;
           print("렌더링 중인 일정: ${todo.title}");
           return Dismissible(
             key: Key(todo.userId ?? ''),
@@ -54,14 +55,25 @@ class _TodoListState extends State<TodoList> {
             background: Container(color: AppColors.deepYellow),
             child: ListTile(
               leading: GestureDetector(
-                onTap: () => toggleSelection(todo.userId ?? ''),
+                onTap: (){
+                  setState(() {
+                    isdone = !isdone;
+                  });
+                },
                 child: CustomCircleIcon(
                   color: todo.iconColor,
-                  isSelected: isSelected,
+                  isSelected: isdone,
                 ),
               ),
               title: Text(todo.title),
               subtitle: Text(todo.description),
+              onTap: () {
+                // AddTodo 위젯으로 네비게이션
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddTodo()),
+                );
+              },
             ),
           );
         },
