@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:danchu/profile_image_utils.dart';
+import 'package:danchu/calendar/show_friend_todos.dart';
 
 class ShowFriendList extends StatelessWidget {
   const ShowFriendList({Key? key}) : super(key: key);
@@ -76,15 +77,25 @@ class ShowFriendList extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: CircleAvatar(
-                            radius: 30,
-                            backgroundImage: profilePath.isNotEmpty
-                                ? CachedNetworkImageProvider(profilePath)
-                                : null,
-                            child: profilePath.isEmpty
-                                ? Icon(Icons.person, size: 30)
-                                : null,
-                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ShowFriendTodos(userId: friendId),
+                                ),
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: profilePath.isNotEmpty
+                                  ? CachedNetworkImageProvider(profilePath)
+                                  : null,
+                              child: profilePath.isEmpty
+                                  ? Icon(Icons.person, size: 30)
+                                  : null,
+                            ),
+                          )
                         ),
                       ),
                     );
