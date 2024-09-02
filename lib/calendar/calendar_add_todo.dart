@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../models/todo_item.dart';
 import '../models/custom_circle_icon.dart';
 import '/src/color.dart';
+import '/src/time_picker.dart';
 
 class AddTodo extends StatefulWidget {
   @override
@@ -18,9 +19,8 @@ class _AddTodoState extends State<AddTodo> {
   final _descriptionController = TextEditingController();
   Color _selectedColor = Color(0xffb7b7b7);
   DateTime _selectedDate = DateTime.now();
-  TimeOfDay _beginTime = TimeOfDay.now();
-  TimeOfDay _endTime =
-      TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1);
+  DateTime _beginTime = DateTime.now();
+  DateTime _endTime = DateTime.now().add(Duration(hours: 1));
   bool isAllDay = false;
   bool isRoutine = false;
 
@@ -147,13 +147,14 @@ class _AddTodoState extends State<AddTodo> {
                 fontSize: screenSize.width * 0.04, color: Colors.black)),
         Spacer(),
         Switch(
-            value: isAllDay,
-            onChanged: (value) {
-              setState(() {
-                isAllDay = value;
-              });
-            },
-            activeColor: AppColors.danchuYellow),
+          value: isAllDay,
+          onChanged: (value) {
+            setState(() {
+              isAllDay = value;
+            });
+          },
+          activeColor: AppColors.danchuYellow,
+        ),
       ],
     );
   }
@@ -163,44 +164,37 @@ class _AddTodoState extends State<AddTodo> {
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTimePicker('시작 시간', _beginTime,
-                  (time) => setState(() => _beginTime = time!)),
+              TimePicker(
+                title: '시작 시간',
+                time: _beginTime,
+                onChanged: (time) => setState(() => _beginTime = time),
+              ),
               SizedBox(height: screenSize.height * 0.02),
-              _buildTimePicker('종료 시간', _endTime,
-                  (time) => setState(() => _endTime = time!)),
+              TimePicker(
+                title: '종료 시간',
+                time: _endTime,
+                onChanged: (time) => setState(() => _endTime = time),
+              ),
             ],
           )
         : Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                  child: _buildTimePicker('시작 시간', _beginTime,
-                      (time) => setState(() => _beginTime = time!))),
+              TimePicker(
+                  title: '시작 시간',
+                  time: _beginTime,
+                  onChanged: (time) {
+                    setState(() => _beginTime = time);
+                  }),
               SizedBox(width: screenSize.width * 0.02),
-              Expanded(
-                  child: _buildTimePicker('종료 시간', _endTime,
-                      (time) => setState(() => _endTime = time!))),
+              TimePicker(
+                  title: '종료 시간',
+                  time: _endTime,
+                  onChanged: (time) {
+                    setState(() => _endTime = time);
+                  }),
             ],
           );
-  }
-
-  Widget _buildTimePicker(
-      String label, TimeOfDay time, Function(TimeOfDay?) onChanged) {
-    return InkWell(
-      onTap: () => _selectTime(context, onChanged),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(color: Colors.black),
-          border:
-              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-          focusedBorder:
-              OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-        ),
-        child: Text('${time.format(context)}',
-            style: TextStyle(color: Colors.black)),
-      ),
-    );
   }
 
   Widget _buildRoutineToggle(Size screenSize) {
@@ -267,75 +261,91 @@ class _AddTodoState extends State<AddTodo> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    await showDialog(
       context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          child: Theme(
+            data: ThemeData.light().copyWith(
+              colorScheme: ColorScheme.light(
+                primary: AppColors.danchuYellow, // 선택된 날짜 색상
+                onPrimary: Colors.black, // 선택된 날짜의 텍스트 색상
+                onSurface: Colors.black, // 캘린더의 텍스트 색상
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.black, // 버튼 텍스트 색상
+                ),
+              ),
+            ),
+            child: Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CalendarDatePicker(
+                    initialDate: _selectedDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2101),
+                    onDateChanged: (DateTime newDate) {
+                      setState(() {
+                        _selectedDate = newDate;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
-    if (picked != null && picked != _selectedDate)
-      setState(() {
-        _selectedDate = picked;
-      });
   }
 
-  Future<void> _selectTime(
-      BuildContext context, Function(TimeOfDay?) onChanged) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      onChanged(picked);
-    }
-  }
-
-  void _saveTodoItem() {
+  Future<void> _saveTodoItem() async {
     final User? user = _auth.currentUser;
 
-    if (user != null) {
-      if (_titleController.text.isNotEmpty &&
-          _descriptionController.text.isNotEmpty) {
-        final newTodo = TodoItem(
-          date: _selectedDate,
-          title: _titleController.text,
-          description: _descriptionController.text,
-          beginTime: isAllDay
-              ? null
-              : DateTime(_selectedDate.year, _selectedDate.month,
-                  _selectedDate.day, _beginTime.hour, _beginTime.minute),
-          endTime: isAllDay
-              ? null
-              : DateTime(_selectedDate.year, _selectedDate.month,
-                  _selectedDate.day, _endTime.hour, _endTime.minute),
-          isRoutine: isRoutine,
-          isAllDay: isAllDay,
-          iconColor: _selectedColor,
-        );
-
-        _todos
-            .collection('users')
-            .doc(user.uid)
-            .collection('todos')
-            .add(newTodo.toJson())
-            .then((_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('할 일이 성공적으로 저장되었습니다.')),
-          );
-          Navigator.of(context).pop();
-        }).catchError((error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('저장 중 오류가 발생했습니다: $error')),
-          );
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('제목과 설명을 모두 입력해주세요.')),
-        );
-      }
-    } else {
+    if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('로그인이 필요합니다.')),
+      );
+      return;
+    }
+
+    if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('제목과 설명을 모두 입력해주세요.')),
+      );
+      return;
+    }
+
+    final newTodo = TodoItem(
+      date: _selectedDate,
+      title: _titleController.text,
+      description: _descriptionController.text,
+      beginTime: isAllDay ? null : _beginTime,
+      endTime: isAllDay ? null : _endTime,
+      isRoutine: isRoutine,
+      isAllDay: isAllDay,
+      iconColor: _selectedColor,
+    );
+
+    try {
+      await _todos
+          .collection('users')
+          .doc(user.uid)
+          .collection('todos')
+          .add(newTodo.toJson());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('할 일이 성공적으로 저장되었습니다.')),
+      );
+      Navigator.of(context).pop(); // 저장 후 이전 페이지로 돌아갑니다.
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('저장 중 오류가 발생했습니다: $error')),
       );
     }
   }

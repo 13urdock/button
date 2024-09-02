@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '/login/logout.dart';
 import '../src/color.dart';
 import 'profile_contact.dart';
-import 'profile_setting_account.dart';
 import 'profile_setting.dart';
 
 class Profile extends StatelessWidget {
@@ -70,9 +69,9 @@ class Profile extends StatelessWidget {
                       SizedBox(height: 20), // 상단 여백 추가
                       _buildButton(
                           context, Icons.settings, '설정', ProfileSetting()), //완료
-                      
+
                       // 나중에 버전 업데이트 때 추가 구현 및 수정 필요함
-                      
+
                       // SizedBox(height: 25), // 버튼 사이 간격
                       // _buildButton(
                       //     context,

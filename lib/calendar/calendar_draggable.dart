@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'calendar.dart'; // 날짜와 연결하기 위해서 
 import 'calendar_add_todo.dart';
 import 'calendar_todo_list.dart';
 import '../models/todo_item.dart';
@@ -11,7 +10,8 @@ import '../models/todo_item.dart';
 class CalendarDraggable extends StatefulWidget {
   final DateTime selectedDay;
 
-  const CalendarDraggable({Key? key, required this.selectedDay}) : super(key: key);
+  const CalendarDraggable({Key? key, required this.selectedDay})
+      : super(key: key);
 
   @override
   _CalendarDraggableState createState() => _CalendarDraggableState();
@@ -21,89 +21,44 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List<TodoItem> _filteredTodoItems= []; // 선택된 날의 일정을 담아놓는 일정 리스트. 나중에 데이터베이스와 연결하기
-
   @override
   void initState() {
     super.initState();
-    _loadFilteredTodoItems();
   }
 
-  @override
-  void didUpdateWidget(CalendarDraggable oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.selectedDay != widget.selectedDay) {
-      _loadFilteredTodoItems();
-    }
-  }
-
-  void _loadFilteredTodoItems() async {
+  Stream<List<TodoItem>> _getTodoItemsStream() {
     final User? user = _auth.currentUser;
     if (user == null) {
       print('로그인하세요');
-      return;
+      return Stream
+          .empty(); // Return an empty stream if the user is not logged in
     }
-    final DateTime startOfDay = DateTime(widget.selectedDay.year, widget.selectedDay.month, widget.selectedDay.day);
-    final DateTime endOfDay = startOfDay.add(Duration(days: 1)).subtract(Duration(microseconds: 1));
+
+    final DateTime startOfDay = DateTime(widget.selectedDay.year,
+        widget.selectedDay.month, widget.selectedDay.day);
+    final DateTime endOfDay =
+        startOfDay.add(Duration(days: 1)).subtract(Duration(microseconds: 1));
     final Timestamp startTimestamp = Timestamp.fromDate(startOfDay);
     final Timestamp endTimestamp = Timestamp.fromDate(endOfDay);
 
-    try {
-      final QuerySnapshot snapshot = await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('todos')
-          .where('date', isGreaterThanOrEqualTo: startTimestamp)
-          .where('date', isLessThan: endTimestamp)
-          .get();
-
-      setState(() {
-        _filteredTodoItems = snapshot.docs.map((doc) {
-          return TodoItem.fromFirestore(doc);
-        }).toList();
-      });
-
-      print("${DateFormat('yyyy-MM-dd').format(widget.selectedDay)}에 대해 로드된 일정 수: ${_filteredTodoItems.length}");
-    } catch (error) {
-      print("데이터 로딩 오류: $error");
-    }
+    return _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('todos')
+        .where('date', isGreaterThanOrEqualTo: startTimestamp)
+        .where('date', isLessThan: endTimestamp)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => TodoItem.fromFirestore(doc)).toList());
   }
 
-  // 날짜만 비교하는 헬퍼 함수
-  bool isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && 
-          date1.month == date2.month && 
-          date1.day == date2.day;
-  }
-
-  void _deleteTodoItem(TodoItem deletedItem) async {
-    final User? user = _auth.currentUser;
-    if (user == null) return;
-
-    try {
-      await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('todos')
-          .doc(deletedItem.id)
-          .delete();
-
-      setState(() {
-        _filteredTodoItems.remove(deletedItem);
-      });
-    } catch (error) {
-      print("삭제 오류: $error");
-    }
-  }
-
-  String getDateText(DateTime selectedDay){
+  String getDateText(DateTime selectedDay) {
     final now = DateTime.now();
     if (selectedDay.year == now.year &&
         selectedDay.month == now.month &&
         selectedDay.day == now.day) {
       return 'TODAY';
-    } 
-    else {
+    } else {
       return DateFormat('M.d').format(selectedDay);
     }
   }
@@ -118,7 +73,7 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
       minChildSize: 0.35, // 최소 위치
       maxChildSize: 1.0, // 최대 위치
       builder: (BuildContext context, ScrollController scrollController) {
-        return Container( // draggable되는 박스
+        return Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -131,7 +86,8 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
             child: Column(
               children: [
                 Center(
-                  child: Container( // 상단 회색 바
+                  child: Container(
+                    // 상단 회색 바
                     width: size.width * 0.1,
                     height: 5,
                     margin: EdgeInsets.symmetric(vertical: size.height * 0.01),
@@ -143,7 +99,7 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-                  child: Row( // 날짜 표시, 일정 추가 버튼
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -156,9 +112,9 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                       IconButton(
                         icon: Icon(Icons.add, size: size.width * 0.06),
                         onPressed: () async {
-                          final newTodo = await Navigator.push( // schedule에 pop하면서 리턴되는 TodoItem을 받습니다
+                          final newTodo = await Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddTodo()), // TodoItem 리턴
+                            MaterialPageRoute(builder: (context) => AddTodo()),
                           );
                         },
                       ),
@@ -166,12 +122,37 @@ class _CalendarDraggableState extends State<CalendarDraggable> {
                   ),
                 ),
                 SizedBox(height: size.height * 0.02),
-                Container(
-                  height: size.height * 0.6 - padding.bottom,
-                  child: TodoList(
-                    todoItems: _filteredTodoItems,
-                    onDelete: _deleteTodoItem,
-                  ),
+                StreamBuilder<List<TodoItem>>(
+                  stream: _getTodoItemsStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else {
+                      return Container(
+                        height: size.height * 0.6 - padding.bottom,
+                        child: TodoList(
+                          todoItems: snapshot.data!,
+                          onDelete: (item) async {
+                            final User? user = _auth.currentUser;
+                            if (user == null) return;
+
+                            try {
+                              await _firestore
+                                  .collection('users')
+                                  .doc(user.uid)
+                                  .collection('todos')
+                                  .doc(item.id)
+                                  .delete();
+                            } catch (error) {
+                              print("삭제 오류: $error");
+                            }
+                          },
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             ),
