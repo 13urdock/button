@@ -82,7 +82,10 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Color(0xFFBDBDBD),
