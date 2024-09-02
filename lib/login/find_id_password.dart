@@ -1,4 +1,7 @@
+import '../src/color.dart';
 import 'package:flutter/material.dart';
+import 'find_id.dart';
+import 'find_password.dart';
 
 class FindIdPassword extends StatelessWidget {
   const FindIdPassword({Key? key}) : super(key: key);
@@ -6,7 +9,7 @@ class FindIdPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: Colors.yellow, // AppColors.danchuYellow 대신 사용
+      backgroundColor: AppColors.danchuYellow,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -20,10 +23,10 @@ class FindIdPassword extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white, // AppColors.white 대신 사용
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('계정 찾기'),
-        backgroundColor: Colors.yellow, // AppColors.danchuYellow 대신 사용
+        backgroundColor: AppColors.danchuYellow,
       ),
       body: Center(
         child: Column(
@@ -34,7 +37,11 @@ class FindIdPassword extends StatelessWidget {
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  // 아이디 찾기 로직 구현
+                  // 아이디 찾기 페이지로 이동
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => find_Id()),
+                  );
                 },
                 child: Text('아이디 찾기', style: textStyle),
                 style: buttonStyle,
@@ -46,9 +53,13 @@ class FindIdPassword extends StatelessWidget {
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  // 비밀번호 찾기 로직 구현
+                  // 비밀번호 찾기 페이지로 이동
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ResetPassword()),
+                  );
                 },
-                child: Text('비밀번호 찾기', style: textStyle),
+                child: Text('비밀번호 재설정하기', style: textStyle),
                 style: buttonStyle,
               ),
             ),
