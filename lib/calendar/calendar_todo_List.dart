@@ -10,12 +10,13 @@ class TodoList extends StatefulWidget {
   final Function(TodoItem) onDelete;
   final Function(TodoItem) onEdit;  // 새로 추가된 콜백
 
-  TodoList({
+  const TodoList({
+    Key? key,
     required this.today,
     required this.todoItems,
     required this.onDelete,
     required this.onEdit,  // 새로 추가된 콜백
-  });
+  }): super(key: key);
 
   @override
   _TodoListState createState() => _TodoListState();
