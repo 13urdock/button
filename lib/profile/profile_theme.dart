@@ -65,6 +65,12 @@ class _ProfileThemeState extends State<ProfileTheme> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('테마설정', style: TextStyle(color: Colors.black)),
+        backgroundColor: AppColors.danchuYellow,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return SingleChildScrollView(
@@ -75,7 +81,7 @@ class _ProfileThemeState extends State<ProfileTheme> {
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 64,
+                      height: 20,
                       color: AppColors.mainColor,
                     ),
                     Expanded(
@@ -126,7 +132,8 @@ class _ProfileThemeState extends State<ProfileTheme> {
                                 ),
                               ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 50),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 50),
                               child: ElevatedButton(
                                 onPressed: () {
                                   _showMessage();

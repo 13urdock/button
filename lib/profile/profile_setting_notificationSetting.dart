@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:scroll_datetime_picker/scroll_datetime_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../src/color.dart';
+import '/src/time_picker.dart';
 
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -15,10 +14,12 @@ class ProfileSettingNotification extends StatefulWidget {
   const ProfileSettingNotification({Key? key}) : super(key: key);
 
   @override
-  _ProfileSettingNotificationState createState() => _ProfileSettingNotificationState();
+  _ProfileSettingNotificationState createState() =>
+      _ProfileSettingNotificationState();
 }
 
-class _ProfileSettingNotificationState extends State<ProfileSettingNotification> {
+class _ProfileSettingNotificationState
+    extends State<ProfileSettingNotification> {
   bool isScheduleNotificationOn = true;
   bool isSoundOn = true;
   bool isVibrationOn = true;
@@ -27,7 +28,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
   DateTime doNotDisturbStartTime = DateTime(2024, 1, 1, 22, 0);
   DateTime doNotDisturbEndTime = DateTime(2024, 1, 1, 7, 0);
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
@@ -42,13 +44,19 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
     try {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
-        isScheduleNotificationOn = prefs.getBool('isScheduleNotificationOn') ?? true;
+        isScheduleNotificationOn =
+            prefs.getBool('isScheduleNotificationOn') ?? true;
         isSoundOn = prefs.getBool('isSoundOn') ?? true;
         isVibrationOn = prefs.getBool('isVibrationOn') ?? true;
-        isFriendAddNotificationOn = prefs.getBool('isFriendAddNotificationOn') ?? true;
+        isFriendAddNotificationOn =
+            prefs.getBool('isFriendAddNotificationOn') ?? true;
         isDoNotDisturbOn = prefs.getBool('isDoNotDisturbOn') ?? true;
-        doNotDisturbStartTime = DateTime.parse(prefs.getString('doNotDisturbStartTime') ?? DateTime(2024, 1, 1, 22, 0).toIso8601String());
-        doNotDisturbEndTime = DateTime.parse(prefs.getString('doNotDisturbEndTime') ?? DateTime(2024, 1, 1, 7, 0).toIso8601String());
+        doNotDisturbStartTime = DateTime.parse(
+            prefs.getString('doNotDisturbStartTime') ??
+                DateTime(2024, 1, 1, 22, 0).toIso8601String());
+        doNotDisturbEndTime = DateTime.parse(
+            prefs.getString('doNotDisturbEndTime') ??
+                DateTime(2024, 1, 1, 7, 0).toIso8601String());
       });
     } catch (e) {
       print('Error loading settings: $e');
@@ -62,10 +70,13 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
       await prefs.setBool('isScheduleNotificationOn', isScheduleNotificationOn);
       await prefs.setBool('isSoundOn', isSoundOn);
       await prefs.setBool('isVibrationOn', isVibrationOn);
-      await prefs.setBool('isFriendAddNotificationOn', isFriendAddNotificationOn);
+      await prefs.setBool(
+          'isFriendAddNotificationOn', isFriendAddNotificationOn);
       await prefs.setBool('isDoNotDisturbOn', isDoNotDisturbOn);
-      await prefs.setString('doNotDisturbStartTime', doNotDisturbStartTime.toIso8601String());
-      await prefs.setString('doNotDisturbEndTime', doNotDisturbEndTime.toIso8601String());
+      await prefs.setString(
+          'doNotDisturbStartTime', doNotDisturbStartTime.toIso8601String());
+      await prefs.setString(
+          'doNotDisturbEndTime', doNotDisturbEndTime.toIso8601String());
     } catch (e) {
       print('Error saving settings: $e');
       // Optionally, show an error message to the user
@@ -73,28 +84,31 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
   }
 
   Future<void> _initializeNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-    
-    final InitializationSettings initializationSettings = InitializationSettings(
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
     );
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
     await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(const AndroidNotificationChannel(
-    'high_importance_channel',
-    'High Importance Notifications',
-    description: 'This channel is used for important notifications.',
-    importance: Importance.high,
-  ));
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(const AndroidNotificationChannel(
+          'high_importance_channel',
+          'High Importance Notifications',
+          description: 'This channel is used for important notifications.',
+          importance: Importance.high,
+        ));
   }
 
   Future<void> _requestNotificationPermissions() async {
     if (Platform.isIOS) {
       await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
           ?.requestPermissions(
             alert: true,
             badge: true,
@@ -121,7 +135,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
       }
 
       // Update sound and vibration settings
-      final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      final AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
         'your_channel_id',
         'Your Channel Name',
         channelDescription: 'Your Channel Description',
@@ -130,7 +145,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
         playSound: isSoundOn,
         enableVibration: isVibrationOn,
       );
-      final NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+      final NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
 
       // Apply Do Not Disturb settings
       if (isDoNotDisturbOn) {
@@ -139,7 +155,6 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
 
       // Update system settings (this requires platform-specific implementation)
       await _updateSystemSettings();
-
     } catch (e) {
       print('Error updating notification settings: $e');
       // Optionally, show an error message to the user
@@ -149,13 +164,15 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
   Future<void> _scheduleNotifications() async {
     // This is a placeholder for your app's notification scheduling logic
     // You should implement this based on your app's specific requirements
-    
+
     // Example: Schedule a daily notification
     final now = DateTime.now();
-    var scheduledNotificationDateTime = DateTime(now.year, now.month, now.day, 9, 0); // 9:00 AM
-    
+    var scheduledNotificationDateTime =
+        DateTime(now.year, now.month, now.day, 9, 0); // 9:00 AM
+
     if (scheduledNotificationDateTime.isBefore(now)) {
-      scheduledNotificationDateTime = scheduledNotificationDateTime.add(Duration(days: 1));
+      scheduledNotificationDateTime =
+          scheduledNotificationDateTime.add(Duration(days: 1));
     }
 
     if (!_isInDoNotDisturbPeriod(scheduledNotificationDateTime)) {
@@ -172,7 +189,8 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
           ),
         ),
         androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
       );
     }
@@ -182,8 +200,10 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
     if (!isDoNotDisturbOn) return false;
 
     final now = DateTime.now();
-    final startTime = DateTime(now.year, now.month, now.day, doNotDisturbStartTime.hour, doNotDisturbStartTime.minute);
-    final endTime = DateTime(now.year, now.month, now.day, doNotDisturbEndTime.hour, doNotDisturbEndTime.minute);
+    final startTime = DateTime(now.year, now.month, now.day,
+        doNotDisturbStartTime.hour, doNotDisturbStartTime.minute);
+    final endTime = DateTime(now.year, now.month, now.day,
+        doNotDisturbEndTime.hour, doNotDisturbEndTime.minute);
 
     if (endTime.isBefore(startTime)) {
       // If end time is before start time, it means the period crosses midnight
@@ -237,19 +257,26 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('알람설정', style: TextStyle(color: Colors.black)),
+        backgroundColor: AppColors.danchuYellow,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
       body: Container(
         color: AppColors.danchuYellow,
         child: Stack(
           children: [
-            Positioned(
-              left: 0,
-              top: 64,
+            SizedBox(height: 10),
+            Expanded(
               child: Container(
-                width: 400,
-                height: 721,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Color(0x3FFFD76E),
@@ -266,7 +293,10 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: _buildSettingItem(
-                          '일정 알림', isScheduleNotificationOn, (value) => _onSettingChanged('scheduleNotification', value),
+                          '일정 알림',
+                          isScheduleNotificationOn,
+                          (value) =>
+                              _onSettingChanged('scheduleNotification', value),
                           icon: Icons.event_note),
                     ),
                     _buildDivider(),
@@ -274,9 +304,11 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: Column(
                         children: [
-                          _buildSettingItem('소리', isSoundOn, (value) => _onSettingChanged('sound', value),
+                          _buildSettingItem('소리', isSoundOn,
+                              (value) => _onSettingChanged('sound', value),
                               hasLeadingSpace: true),
-                          _buildSettingItem('진동', isVibrationOn, (value) => _onSettingChanged('vibration', value),
+                          _buildSettingItem('진동', isVibrationOn,
+                              (value) => _onSettingChanged('vibration', value),
                               hasLeadingSpace: true),
                         ],
                       ),
@@ -285,7 +317,10 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: _buildSettingItem(
-                          '친구 추가 푸시 알림', isFriendAddNotificationOn, (value) => _onSettingChanged('friendAddNotification', value),
+                          '친구 추가 푸시 알림',
+                          isFriendAddNotificationOn,
+                          (value) =>
+                              _onSettingChanged('friendAddNotification', value),
                           icon: Icons.person_add),
                     ),
                     _buildDivider(),
@@ -293,7 +328,11 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: Column(
                         children: [
-                          _buildSettingItem('방해 금지 모드', isDoNotDisturbOn, (value) => _onSettingChanged('doNotDisturb', value),
+                          _buildSettingItem(
+                              '방해 금지 모드',
+                              isDoNotDisturbOn,
+                              (value) =>
+                                  _onSettingChanged('doNotDisturb', value),
                               icon: Icons.do_not_disturb_on),
                           _buildDoNotDisturbTimeSettings(),
                         ],
@@ -355,125 +394,24 @@ class _ProfileSettingNotificationState extends State<ProfileSettingNotification>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTimePickerItem('방해 금지 시간 시작', doNotDisturbStartTime, (time) {
-            setState(() => doNotDisturbStartTime = time);
-            _saveSettings();
-            _updateNotificationSettings();
-          }),
-          SizedBox(height: 8),
-          _buildTimePickerItem('방해 금지 시간 끝', doNotDisturbEndTime, (time) {
-            setState(() => doNotDisturbEndTime = time);
-            _saveSettings();
-            _updateNotificationSettings();
-          }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimePickerItem(String title, DateTime time, Function(DateTime) onChanged) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          SizedBox(width: 40),
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: Color(0xFF757575),
-                fontSize: 16,
-                fontFamily: 'Pretendard',
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  DateTime tempTime = time;
-                  return StatefulBuilder(
-                    builder: (context, setState) {
-                      return AlertDialog(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15)
-                        ),
-                        content: Container(
-                          height: 200,
-                          width: 300,
-                          child: ScrollDateTimePicker(
-                            itemExtent: 50,
-                            infiniteScroll: true,
-                            onChange: (DateTime newDateTime) {
-                              setState(() {
-                                tempTime = newDateTime;
-                              });
-                            },
-                            dateOption: DateTimePickerOption(
-                              dateFormat: DateFormat('HH:mm'),
-                              minDate: DateTime(2024, 1, 1, 0, 0),
-                              maxDate: DateTime(2024, 1, 1, 23, 59),
-                              initialDate: tempTime,
-                            ),
-                            style: DateTimePickerStyle(
-                              activeStyle: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFFFFD66E),
-                              ),
-                              inactiveStyle: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            wheelOption: const DateTimePickerWheelOption(
-                              perspective: 0.01,
-                              diameterRatio: 1.2,
-                              squeeze: 1.0,
-                            ),
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            child: Text('취소', style: TextStyle(color: Colors.black54)),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          TextButton(
-                            child: Text('확인', style: TextStyle(color: Color(0xFFFFD66E))),
-                            onPressed: () {
-                              onChanged(tempTime);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              );
+          TimePicker(
+            title: '방해 금지 시간 시작',
+            time: doNotDisturbStartTime,
+            onChanged: (time) {
+              setState(() => doNotDisturbStartTime = time);
+              _saveSettings();
+              _updateNotificationSettings();
             },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Color(0xFFF5F5F5),
-              ),
-              child: Text(
-                DateFormat('HH:mm').format(time),
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
           ),
+          SizedBox(height: 8),
+          TimePicker(
+              title: '방해 금지 시간 끝',
+              time: doNotDisturbEndTime,
+              onChanged: (time) {
+                setState(() => doNotDisturbEndTime = time);
+                _saveSettings();
+                _updateNotificationSettings();
+              }),
         ],
       ),
     );
