@@ -110,7 +110,7 @@ class _ShowCalendarState extends State<ShowCalendar> {
                       margin: EdgeInsets.symmetric(horizontal: 0.8),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.deepYellow,
+                        color: AppColors.white,
                       ),
                       width: 6.0,
                       height: 6.0,
